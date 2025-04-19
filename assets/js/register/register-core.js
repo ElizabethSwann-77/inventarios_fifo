@@ -55,8 +55,8 @@ $(document).ready(function() {
 
     $('#password').on('input', function () {
         const valor = $(this).val().trim();
-        if (valor.length >= 50) {
-            $(this).val(valor.substring(0, 50));  // Limitar a 50 caracteres
+        if (valor.length >= 15) {
+            $(this).val(valor.substring(0, 15));  // Limitar a 50 caracteres
             toastr.warning("La contraseña no puede ser mayor a 50 caracteres");
         }
     });
@@ -78,8 +78,8 @@ $(document).ready(function() {
 
     $('#nombre').on('input', function () {
         const valor = $(this).val().trim();
-        if (valor.length >= 150) {
-            $(this).val(valor.substring(0, 150));  // Limitar a 150 caracteres
+        if (valor.length >= 100) {
+            $(this).val(valor.substring(0, 100));  // Limitar a 150 caracteres
             toastr.warning("El nombre no puede ser mayor a 150 caracteres");
         }
     });
