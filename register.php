@@ -7,9 +7,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $usuario = $_POST['usuario'];
     $contrasena = $_POST['contrasena'];
     $nombre = $_POST['nombre'];
+    $ficha = $_POST['ficha'];
 
     // Validación mínima
-    if (empty($usuario) || empty($contrasena) || empty($nombre)) {
+    if (empty($usuario) || empty($contrasena) || empty($nombre) || empty($ficha)) {
         $mensaje = "⚠️ Todos los campos son obligatorios";
     } else {
         // Verificar si el usuario ya existe
@@ -25,8 +26,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $contrasena_encriptada = password_hash($contrasena, PASSWORD_DEFAULT);
 
             // Insertar nuevo usuario
-            $insertar = $conexion->prepare("INSERT INTO usuarios (usuario, contrasena, nombre, puesto) VALUES (?, ?, ?, 'EMP')");
-            $insertar->bind_param("sss", $usuario, $contrasena_encriptada, $nombre);
+            $insertar = $conexion->prepare("INSERT INTO usuarios (usuario, contrasena, nombre, ficha, puesto) VALUES (?, ?, ?, ?, 'EMP')");
+            $insertar->bind_param("ssss", $usuario, $contrasena_encriptada, $nombre, $ficha);
 
               if ($insertar->execute()) {
                 $mensaje = "Registro exitoso. Ya puedes iniciar sesión.";
@@ -89,11 +90,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                         <div class="form-group mb-3">
                             <label class="label">Usuario</label>
                             <input type="text" name="usuario" class="form-control" placeholder="Nombre de Usuario" id="usuario" required autocomplete="username">
-                            </div>
+                        </div>
                             <div class="form-group mb-3">
                                 <label class="label">Contraseña</label>
                                 <div class="input-group">
-                                    <input type="password" name="contrasena" class="form-control" placeholder="Contraseña" id="password" required autocomplete="current-password">
+                                    <input type="password" name="contrasena" class="form-control" placeholder="Contraseña" id="password" required autocomplete="new-password">
                                     <div class="input-group-append">
                                         <span id="toggle-password" class="input-group-text">
                                             <i class="fas fa-eye"></i>
@@ -104,7 +105,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                         <div class="form-group mb-3">
                             <label class="label">Nombre</label>
                             <input type="text" name="nombre" class="form-control" placeholder="Nombre completo" id="nombre" required>
-                        </div>       
+                        </div>  
+                        <div class="form-group mb-3">
+                            <label class="label">No. de Ficha</label>
+                            <input type="number" name="ficha" class="form-control" placeholder="Número de Ficha" id="ficha" required>
+                        </div>      
                         <button type="submit" class="btn btn-primary btn-flat w-100 mb-4">Registrate</button>
                         <div class="register-link text-center">
                             <p>¿Ya tienes una cuenta? 

@@ -1,6 +1,5 @@
 <?php
 session_start();
-
 // Evitar que se use el caché del navegador
 header("Cache-Control: no-cache, no-store, must-revalidate"); // HTTP 1.1
 header("Pragma: no-cache"); // HTTP 1.0
@@ -56,14 +55,13 @@ if (!isset($_SESSION['usuario'])) {
             <div class="col-sm-4">
                 <div class="page-header float-left">
                     <div class="page-title">
-                        <h1>Formulario FIFO</h1>
+                        <h1>Registro de Proyectos</h1>
                     </div>
                 </div>
             </div>
             <div class="col-sm-8">
                 <div class="page-header float-right">
                     <div class="page-title">
-                        <!-- Posible espacio adicional -->
                     </div>
                 </div>
             </div>
@@ -74,7 +72,7 @@ if (!isset($_SESSION['usuario'])) {
                 <div class="col-md-12 col-12">
                     <div class="card">
                         <div class="card-header">
-                            <strong>Tabla Número de Parte</strong>
+                            <strong>Proyectos</strong>
                         </div>
                         <div class="card-body card-block">
                             <!-- Tu tabla aquí -->
@@ -99,7 +97,7 @@ if (!isset($_SESSION['usuario'])) {
 <script src="vendors/toastr/toastr.min.js"></script>
 <script src="https://cdn3.devexpress.com/jslib/20.1.6/js/dx.all.js"></script>
 <script src="assets/js/main.js"></script>
-<script src="assets/js/fifo/fifo-core.js"></script>
+<script src="assets/js/proyectos/proyectos-core.js"></script>
 
 </body>
 </html>

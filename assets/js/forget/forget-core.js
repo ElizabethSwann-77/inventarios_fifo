@@ -61,6 +61,14 @@ $(document).ready(function() {
         }
     });
 
+    $('#password-confirm').on('input', function () {
+        const valor = $(this).val().trim();
+        if (valor.length >= 15) {
+            $(this).val(valor.substring(0, 15));  // Limitar a 50 caracteres
+            toastr.warning("La contraseña no puede ser mayor a 15 caracteres");
+        }
+    });
+
     // Función para alternar la visibilidad de la contraseña
     $('#toggle-password').on('click', function() {
         const passwordField = $('#password');
@@ -76,11 +84,17 @@ $(document).ready(function() {
         }
     });
 
-    $('#nombre').on('input', function () {
-        const valor = $(this).val().trim();
-        if (valor.length >= 100) {
-            $(this).val(valor.substring(0, 100));  // Limitar a 150 caracteres
-            toastr.warning("El nombre no puede ser mayor a 100 caracteres");
+    $('#toggle-password2').on('click', function() {
+        const passwordField = $('#password-confirm');
+        const icon = $(this).find('i');
+        
+        // Verificar si la contraseña es visible o no
+        if (passwordField.attr('type') === 'password') {
+            passwordField.attr('type', 'text');  // Mostrar la contraseña
+            icon.removeClass('fa-eye').addClass('fa-eye-slash');  // Cambiar el ícono a "ojo tachado"
+        } else {
+            passwordField.attr('type', 'password');  // Ocultar la contraseña
+            icon.removeClass('fa-eye-slash').addClass('fa-eye');  // Volver al ícono de "ojo"
         }
     });
 

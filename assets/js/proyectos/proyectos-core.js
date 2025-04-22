@@ -1,4 +1,4 @@
-import * as UI from './fifo-ui.js';
+import * as UI from './proyectos-ui.js';
 
 // Desactivar el conflicto con otras librerías
 var $ = jQuery.noConflict();
