@@ -1,6 +1,7 @@
 'use strict';
 
 import * as CORE from './proyectos-core.js';
+var $ = jQuery.noConflict();
 
 //--Todos los estilos, tamaños y textos para la vista movil--//
 let isMobile = window.matchMedia("only screen and (max-width: 1024px)").matches;
@@ -21,10 +22,9 @@ if (isMobile){
 //-----------------------------------------------------------//
 
 //--GRID PARA VISUALIZAR LOS ITEMS DEL INVENTARIO---------------------------------------------------------------------//
-export function getInventory(dataSource) {
-    return $("#gridContainerInventory").dxDataGrid({
+export function getProyectos(dataSource) {
+    return $("#gridProyectos").dxDataGrid({
         dataSource: dataSource,
-        key: "orden_requisicion",
         columnsAutoWidth: true,
         showBorders: true,
         showRowLines: true,
@@ -66,7 +66,7 @@ export function getInventory(dataSource) {
             allowedPageSizes: [5, 10, 20],
             showInfo: true
         },
-        columns: getColumnsInventory(),
+        columns: getColumnasProyectos(),
         grouping: {
             autoExpandAll: false,
             allowCollapsing: true
@@ -78,50 +78,35 @@ export function getInventory(dataSource) {
         columnDragging: {
             allowDragging: true
         },
-        onContentReady: function(e) {
-            e.component.element().find(".dx-datagrid").css({
-                "background-color": "#eceef1",
-                "width": "100%",
-                "box-sizing": "border-box"  // Asegura que el padding no afecte el ancho
-            });
-        }
+
     }).dxDataGrid("instance");
 }
 
-function getColumnsInventory(){
+function getColumnasProyectos(){
     let dataFields = [
         {
-            dataField: "id_insumo",
+            dataField: "id_proyecto",
             allowEditing: false,
-            width: 95,
-            minWidth: 90,
+            width: 100,
+            minWidth: 100,
             headerCellTemplate: function (container) {
-                container.append($("<div style='white-space: normal;'>Código<br>Lis</div>"));
+                container.append($("<div style='white-space: normal;'>Número de<br>Proyecto</div>"));
             }
+        },
+        {
+            dataField: "nombre",
+            caption: "Nombre",
+            minWidth: 180,
+        },
+        {
+            dataField: "responsable",
+            caption: "Responsable",
+            minWidth: 180,
         },
         {
             dataField: "descripcion",
             caption: "Descripción",
             minWidth: 180,
-        },
-        {
-            dataField: "cantidad",
-            caption: "Cantidad",
-            allowEditing: false,
-            width: 95,
-            minWidth: 90,
-        },
-        {
-            dataField: "observaciones",
-            caption: "Observaciones",
-            minWidth: 180,
-        },
-        {
-            dataField: "registro",
-            caption: "Registró",
-            allowEditing: false,
-            minWidth: 180,
-            visible: false,
         },
         {
             dataField: "fecha_registro",
@@ -150,7 +135,7 @@ function getColumnsInventory(){
                             .css("cursor", "pointer")
                             .attr("title", "Editar Registro")
                             .on("click", function () {
-                                CORE.styleUpdateInputs(options.data.id_insumo, options.data.cantidad, options.data.observaciones);
+                               
                             })
                     )
                     .appendTo(container);

@@ -1,16 +1,17 @@
 <?php
 session_start();
-// Evitar que se use el caché del navegador
-header("Cache-Control: no-cache, no-store, must-revalidate"); // HTTP 1.1
-header("Pragma: no-cache"); // HTTP 1.0
-header("Expires: 0"); // Proxies
+// Evitar caché
+header("Cache-Control: no-cache, no-store, must-revalidate");
+header("Pragma: no-cache");
+header("Expires: 0");
 
-// Verificar si el usuario está logueado
+// Verificar sesión
 if (!isset($_SESSION['usuario'])) {
     header("Location: index.php");
     exit();
 }
 ?>
+
 <!doctype html>
 <html class="no-js" lang="es">
 <head>
@@ -26,6 +27,10 @@ if (!isset($_SESSION['usuario'])) {
     <!-- Bootstrap -->
     <link rel="stylesheet" href="vendors/bootstrap/dist/css/bootstrap.min.css">
 
+    <!-- Estilos DevExtreme -->
+    <link rel="stylesheet" href="https://cdn3.devexpress.com/jslib/20.1.6/css/dx.common.css">
+    <link rel="stylesheet" href="https://cdn3.devexpress.com/jslib/20.1.6/css/dx.material.blue.dark.compact.css">
+
     <!-- FontAwesome -->
     <link href="vendors/fontawesome/5.14.0/css/all.css" rel="stylesheet">
 
@@ -40,8 +45,6 @@ if (!isset($_SESSION['usuario'])) {
     <!-- Fuente -->
     <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,600,700,800' rel='stylesheet'>
 
-    <!-- DataGrid -->
-    <link rel="stylesheet" type="text/css" href="https://cdn3.devexpress.com/jslib/20.1.6/css/dx.softblue.compact.css">
 </head>
 <body>
 
@@ -75,7 +78,7 @@ if (!isset($_SESSION['usuario'])) {
                             <strong>Proyectos</strong>
                         </div>
                         <div class="card-body card-block">
-                            <!-- Tu tabla aquí -->
+                            <div id="gridProyectos"></div>
                         </div>
                         <div class="card-footer">
                             <!-- Opcional -->
@@ -97,7 +100,7 @@ if (!isset($_SESSION['usuario'])) {
 <script src="vendors/toastr/toastr.min.js"></script>
 <script src="https://cdn3.devexpress.com/jslib/20.1.6/js/dx.all.js"></script>
 <script src="assets/js/main.js"></script>
-<script src="assets/js/proyectos/proyectos-core.js"></script>
+<script type="module" src="assets/js/proyectos/proyectos-core.js"></script>
 
 </body>
 </html>

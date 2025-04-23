@@ -29,15 +29,6 @@ $(document).ready(function() {
 
     initialize();
 
-    const mensaje = $('#mensaje-container').data('mensaje');
-    if (mensaje) {
-        if (mensaje.includes("incorrecta")) {
-            toastr.warning(mensaje);
-        } else if (mensaje.includes("no encontrado")) {
-            toastr.error(mensaje);
-        } 
-    }
-
     $('#usuario').on('input', function () {
         const valor = $(this).val().trim();
         if (valor.length >= 50) {

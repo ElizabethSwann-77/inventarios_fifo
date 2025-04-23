@@ -31,14 +31,18 @@ $(document).ready(function() {
 
     const mensaje = $('#mensaje-container').data('mensaje');
     if (mensaje) {
-        if (mensaje.includes("exitoso")) {
+        if (mensaje.includes("correctamente")) {
             toastr.success(mensaje);
             setTimeout(function() {
                 window.location.href = 'index.php';
             }, 3000);
-        } else if (mensaje.includes("existe")) {
+        } else if (mensaje.includes("obligatorios")) {
             toastr.warning(mensaje);
-        } else if (mensaje.includes("Error")) {
+        } else if (mensaje.includes("no encontrados")) {
+            toastr.error(mensaje);
+        } else if (mensaje.includes("no coinciden")) {
+            toastr.warning(mensaje);
+        }else if (mensaje.includes("Error")) {
             toastr.error(mensaje);
         } else {
             toastr.info(mensaje);
@@ -100,7 +104,7 @@ $(document).ready(function() {
 
     $('#ficha').on('input', function () {
         const valor = $(this).val().trim();
-        if (valor.length >= 6) {
+        if (valor.length >= 7) {
             $(this).val(valor.substring(0, 6));  // Limitar a 6 numeros
             toastr.warning("El No. de Ficha no puede ser mayor a 6 numeros");
         }

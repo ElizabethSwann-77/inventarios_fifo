@@ -80,7 +80,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
                 <div class="login-form d-flex flex-column justify-content-between" style="height: 100%;">
                     <form method="POST" class="d-flex flex-column flex-grow-1 justify-content-between">
-                    <div id="mensaje-container" data-mensaje="<?= htmlspecialchars($mensaje) ?>"></div>
                         <div>
                             <div class="form-group mb-3">
                                 <label class="label"> USUARIO</label>

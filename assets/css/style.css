@@ -2032,22 +2032,6 @@ header .form-inline {
   right: 0 !important;
   top: 93% !important; }
 
-.dataTables_paginate .pagination {
-  border-radius: 0; }
-  .dataTables_paginate .pagination li {
-    border-radius: 0 !important; }
-    .dataTables_paginate .pagination li a {
-      border-radius: 0 !important;
-      color: #272c33; }
-    .dataTables_paginate .pagination li.active a {
-      background: #272c33;
-      border-color: #272c33;
-      color: #fff; }
-    .dataTables_paginate .pagination li:hover a {
-      background: #272c33;
-      border-color: #272c33;
-      color: #fff; }
-
 @media (max-width: 1024px) {
   .content {
     padding: 0 15px; }
@@ -2686,3 +2670,30 @@ aside.left-panel {
 }
 
 /*--------------------------------------------------------------------------------*/
+
+
+/* Estilo para el contenedor del boton dentro de la grid */
+.custom-button-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+.custom-icon {
+  font-size: 24px; /* Tamaño del ícono */
+}
+
+.custom-icon:hover {
+  background-color: rgba(0, 0, 0, 0.1); /* Se oscurece un poco */
+  transform: scale(1.1); /* Hace que crezca un poco */
+}
+
+.custom-icon:active {
+  transform: scale(0.95); /* Simula el efecto de presionar el botón */
+  background-color: rgba(0, 0, 0, 0.2); /* Oscurece más el fondo al presionar */
+}
+
+.dx-col-fixed {
+  opacity: 1 !important; /* Asegúrate de que no haya transparencia */
+}

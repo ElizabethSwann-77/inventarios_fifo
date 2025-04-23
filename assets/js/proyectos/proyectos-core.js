@@ -35,5 +35,23 @@ $(document).ready(function() {
 });
 
 function initialize() {
-    
+    getProyectos();
 }
+
+
+function getProyectos() {
+    $.ajax({
+        url: 'assets/js/proyectos/proyectos_db.php',
+        method: 'GET',
+        dataType: 'json',
+        success: function(data) {
+            UI.getProyectos(data); // Mostrar en la DataGrid
+        },
+        error: function(xhr, status, error) {
+            console.error("Error al obtener proyectos:", error);
+            toastr.error("No se pudo cargar la lista de proyectos.");
+        }
+    });
+}
+
+
