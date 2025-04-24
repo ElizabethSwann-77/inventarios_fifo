@@ -17,7 +17,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $fila = $resultado->fetch_assoc();
 
         if (password_verify($contrasena, $fila['contrasena'])) {
+            $_SESSION['id_usuario'] = $fila['id_usuario'];
             $_SESSION['usuario'] = $fila['usuario'];
+            $_SESSION['nombre'] = $fila['nombre'];
+            $_SESSION['puesto'] = $fila['puesto'];
             header("Location: formulario_fifo.php");
             exit();
         } else {

@@ -89,6 +89,41 @@ if (!isset($_SESSION['usuario'])) {
         </div>
     </div>
 
+    <div class="modal fade" id="Proyects" tabindex="-1" aria-labelledby="ProyectsLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="ProyectsLabel">Nuevo Registro de Proyecto</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" id="modalBodyProyect">
+                    <form action="" method="post" enctype="multipart/form-data" class="form-horizontal">
+                        <div class="form-group">
+                            <label class="form-control-label">Nombre del Proyecto</label>
+                            <div class="input-group">
+                                <div class="input-group-addon"><i class="fa fa-project-diagram"></i></div>
+                                <input id="nombreProyecto" class="form-control" placeholder="Ejemplo: Linea Nissan">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-control-label">Descripción del Proyecto</label>
+                            <div class="input-group">
+                                <div class="input-group-addon"><i class="fa fa-keyboard"></i></div>
+                                <textarea id="descripcionProyecto" class="form-control" rows="4" placeholder="Descripción (opcional)"></textarea>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-primary" id="btnSaveProyect">Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!--Inicio Footer-->
     <?php require 'footer.php'?>
     <!--Fin Footer-->

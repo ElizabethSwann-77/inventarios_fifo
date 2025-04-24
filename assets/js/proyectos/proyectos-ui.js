@@ -8,6 +8,9 @@ let isMobile = window.matchMedia("only screen and (max-width: 1024px)").matches;
 let size, sizecolumnview, sizesearchPanel, textGroupPanel;
 let visible= true;
 
+export let modoProyecto = 'insert';
+export let idProyectoEditando = null;
+
 if (isMobile){
     size = 35;
     sizecolumnview = 35;
@@ -15,7 +18,7 @@ if (isMobile){
     textGroupPanel = 'Arrastra la columna para agrupar';
     visible = false;
 }else{
-    size = 150;
+    size = 180;
     sizecolumnview = 110;
     textGroupPanel = 'Arrastra una columna aquí para agrupar';
 }
@@ -34,7 +37,7 @@ export function getProyectos(dataSource) {
         columnResizingMode: 'widget',
         "export": {
             enabled: true,
-            fileName: "Almacén Chatarra",
+            fileName: "Proyectos",
             excelFilterEnabled: true,
             excelWrapTextEnabled: true
         },
@@ -66,7 +69,6 @@ export function getProyectos(dataSource) {
             allowedPageSizes: [5, 10, 20],
             showInfo: true
         },
-        columns: getColumnasProyectos(),
         grouping: {
             autoExpandAll: false,
             allowCollapsing: true
@@ -78,7 +80,36 @@ export function getProyectos(dataSource) {
         columnDragging: {
             allowDragging: true
         },
+        columns: getColumnasProyectos(),
+        onToolbarPreparing: function (e) {
+            let toolbarItems = e.toolbarOptions.items;
 
+            toolbarItems.unshift({
+                location: 'after',
+                widget: 'dxButton',
+                options: {
+                    stylingMode: "contained",
+                    text: "Nuevo Proyecto",
+                    icon: 'fas fa-folder-plus icon-button',
+                    hint: 'Registrar Nuevo Proyecto',
+                    type: 'default', // O 'success'
+                    width: size,
+                    elementAttr: {
+                        class: "btn-custom-resaltado icon-button-wrapper"
+                    },
+                    onClick: function(e) {
+                        modoProyecto = 'insert';
+                        idProyectoEditando = null;
+                        CORE.limpiarInputs();
+                        $("#ProyectsLabel").text("Nuevo Registro de Proyecto");
+                        $("#btnSaveProyect").text("Guardar");
+                        $('#Proyects').modal('show');
+                    }
+                    
+                }
+            });
+            
+        }
     }).dxDataGrid("instance");
 }
 
@@ -91,22 +122,59 @@ function getColumnasProyectos(){
             minWidth: 100,
             headerCellTemplate: function (container) {
                 container.append($("<div style='white-space: normal;'>Número de<br>Proyecto</div>"));
-            }
+            },
+            cellTemplate: function (container, options) {
+                container
+                    .css({
+                        "text-align": "center",   // ⬅️ Centrado horizontal
+                        "vertical-align": "middle"
+                    })
+                    .text(options.text);
+            },
         },
         {
             dataField: "nombre",
-            caption: "Nombre",
+            headerCellTemplate: function (container) {
+                container.append($("<div style='white-space: normal;'>Nombre de<br>Proyecto</div>"));
+            },
             minWidth: 180,
+            cellTemplate: function(container, options) {
+                const text = $("<div>").text(options.value).css({
+                    whiteSpace: "normal",   // Asegura el salto de línea
+                    wordWrap: "break-word", // Evita el desbordamiento por palabras largas
+                    overflow: "hidden",
+                    textOverflow: "ellipsis"
+                });
+                container.append(text);
+            }
         },
         {
             dataField: "responsable",
             caption: "Responsable",
             minWidth: 180,
+            cellTemplate: function(container, options) {
+                const text = $("<div>").text(options.value).css({
+                    whiteSpace: "normal",   // Asegura el salto de línea
+                    wordWrap: "break-word", // Evita el desbordamiento por palabras largas
+                    overflow: "hidden",
+                    textOverflow: "ellipsis"
+                });
+                container.append(text);
+            }
         },
         {
             dataField: "descripcion",
             caption: "Descripción",
             minWidth: 180,
+            cellTemplate: function(container, options) {
+                const text = $("<div>").text(options.value).css({
+                    whiteSpace: "normal",   // Asegura el salto de línea
+                    wordWrap: "break-word", // Evita el desbordamiento por palabras largas
+                    overflow: "hidden",
+                    textOverflow: "ellipsis"
+                });
+                container.append(text);
+            }
         },
         {
             dataField: "fecha_registro",
@@ -115,8 +183,18 @@ function getColumnasProyectos(){
             },
             allowEditing: false,
             dataType: "string",
-            width: 110,
-            minWidth: 110,
+            width: 135,
+            minWidth: 135,
+        },
+        {
+            dataField: "fecha_ultima_modificacion",
+            headerCellTemplate: function (container) {
+                container.append($("<div style='white-space: normal;'>Fecha Ultima<br>Modificación</div>"));
+            },
+            allowEditing: false,
+            dataType: "string",
+            width: 135,
+            minWidth: 135,
         },
         {
             caption: "Editar",
@@ -135,11 +213,24 @@ function getColumnasProyectos(){
                             .css("cursor", "pointer")
                             .attr("title", "Editar Registro")
                             .on("click", function () {
-                               
+                                const data = options.data;
+                                modoProyecto = 'edit';
+                                idProyectoEditando = data.id_proyecto;
+            
+                                // Cargar los datos en el modal
+                                $("#nombreProyecto").val(data.nombre);
+                                $("#descripcionProyecto").val(data.descripcion);
+            
+                                // Ajustar encabezado y botón
+                                $("#ProyectsLabel").text("Editar Proyecto");
+                                $("#btnSaveProyect").text("Actualizar");
+            
+                                $('#Proyects').modal('show');
                             })
                     )
                     .appendTo(container);
             }
+            
 
         },
 
