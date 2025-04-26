@@ -17,8 +17,8 @@ if (!isset($_SESSION['usuario'])) {
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Proyectos</title>
-    <meta name="description" content="Proyectos">
+    <title>Formulario FIFO</title>
+    <meta name="description" content="Formulario FIFO">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <link rel="apple-touch-icon" href="apple-icon.png">
@@ -58,7 +58,7 @@ if (!isset($_SESSION['usuario'])) {
             <div class="col-sm-4">
                 <div class="page-header float-left">
                     <div class="page-title">
-                        <h1>Registro de Proyectos</h1>
+                        <h1>Formulario FIFO</h1>
                     </div>
                 </div>
             </div>
@@ -75,10 +75,10 @@ if (!isset($_SESSION['usuario'])) {
                 <div class="col-md-12 col-12">
                     <div class="card">
                         <div class="card-header">
-                            <strong>Proyectos</strong>
+                            <strong>Números de Parte</strong>
                         </div>
                         <div class="card-body card-block">
-                            <div id="gridProyectos"></div>
+                            <div id="gridPiezas"></div>
                         </div>
                         <div class="card-footer">
                             <!-- Opcional -->
@@ -100,20 +100,64 @@ if (!isset($_SESSION['usuario'])) {
                 </div>
                 <div class="modal-body" id="modalBodyProyect">
                     <form action="" method="post" enctype="multipart/form-data" class="form-horizontal">
+
                         <div class="form-group">
-                            <label class="form-control-label">Nombre del Proyecto</label>
+                            <label class="form-control-label">Número de Parte</label>
                             <div class="input-group">
-                                <div class="input-group-addon"><i class="fa fa-project-diagram"></i></div>
-                                <input id="nombreProyecto" class="form-control" placeholder="Ejemplo: Linea Nissan">
+                                <div class="input-group-addon"><i class="fa fa-hashtag"></i></div>
+                                <input class="form-control" placeholder="Ejemplo: 01A1B2C3">
                             </div>
                         </div>
+
                         <div class="form-group">
-                            <label class="form-control-label">Descripción del Proyecto</label>
+                            <label class="form-control-label">Tipo de Parte</label>
                             <div class="input-group">
-                                <div class="input-group-addon"><i class="fa fa-keyboard"></i></div>
-                                <textarea id="descripcionProyecto" class="form-control" rows="4" placeholder="Descripción (opcional)"></textarea>
+                                <div class="input-group-addon"><i class="fa fa-microchip"></i></div>
+                                <select class="form-control">
+                                    <option value="SMT">SMT</option>
+                                    <option value="THT">THT</option>
+                                    <option value="FG">FG</option>
+                                </select>
                             </div>
                         </div>
+
+                        <div class="form-group">
+                            <label class="form-control-label">Cantidad</label>
+                            <div class="input-group">
+                                <div class="input-group-addon"><i class="fa fa-calculator"></i></div>
+                                <input type="number" class="form-control" placeholder="Ejemplo: 20">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-control-label">Responsable</label>
+                            <div class="input-group">
+                                <div class="input-group-addon"><i class="fa fa-user"></i></div>
+                                <input class="form-control" placeholder="Ejemplo: PEREZ PEREZ JUAN">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-control-label">Proyecto</label>
+                            <div class="input-group">
+                                <div class="input-group-addon"><i class="fa fa-sitemap"></i></div>
+                                <input class="form-control" placeholder="Ejemplo: LINEA NISSAN">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-control-label">Estado del Proyecto</label>
+                            <div class="input-group">
+                                <div class="input-group-addon"><i class="fa fa-tasks"></i></div>
+                                <select class="form-control">
+                                    <option value="PCB">PCB</option>
+                                    <option value="Housing">Housing</option>
+                                    <option value="PCBA">PCBA</option>
+                                    <option value="FG">FG</option>
+                                </select>
+                            </div>
+                        </div>
+
                     </form>
                 </div>
                 <div class="modal-footer">
@@ -135,7 +179,7 @@ if (!isset($_SESSION['usuario'])) {
 <script src="vendors/toastr/toastr.min.js"></script>
 <script src="https://cdn3.devexpress.com/jslib/20.1.6/js/dx.all.js"></script>
 <script src="assets/js/main.js"></script>
-<script type="module" src="assets/js/proyectos/proyectos-core.js"></script>
+<script type="module" src="assets/js/partes/partes-core.js"></script>
 
 </body>
 </html>

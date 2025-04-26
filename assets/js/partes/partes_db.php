@@ -107,15 +107,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 // 🔍 MODO SELECT (GET)
 $sql = "SELECT 
-            p.id_proyecto, 
-            p.nombre, 
+            p.numero_parte, 
+            p.id_lote, 
+            p.cantidad,
+            p.tipo_parte,
+            p.estado_parte,   
+            p.estatus, 
+            p.piso, 
             u.nombre AS responsable, 
+            pr.nombre AS proyecto, 
             p.descripcion, 
-            estado,
-            DATE_FORMAT(p.fecha_registro, '%d/%m/%Y %H:%i') AS fecha_registro, 
+            p.prioridad_salida,
+            DATE_FORMAT(p.fecha_ingreso, '%d/%m/%Y %H:%i') AS fecha_ingreso, 
+            DATE_FORMAT(p.fecha_caducidad, '%d/%m/%Y %H:%i') AS fecha_caducidad, 
             DATE_FORMAT(p.fecha_ultima_modificacion, '%d/%m/%Y %H:%i') AS fecha_ultima_modificacion
-        FROM proyectos p 
-        INNER JOIN usuarios u ON p.id_responsable = u.id_usuario";
+        FROM partes p 
+        INNER JOIN usuarios u ON p.id_responsable = u.id_usuario
+        INNER JOIN proyectos pr ON pr.id_proyecto = p.id_proyecto";
 
 // Agregar filtro si no es ADM
 if (!isset($_SESSION['puesto']) || $_SESSION['puesto'] === 'EMP') {
@@ -124,15 +132,15 @@ if (!isset($_SESSION['puesto']) || $_SESSION['puesto'] === 'EMP') {
 }
 
 $resultado = $conexion->query($sql);
-$proyectos = [];
+$partes = [];
 
 if ($resultado && $resultado->num_rows > 0) {
     while ($fila = $resultado->fetch_assoc()) {
-        $proyectos[] = $fila;
+        $partes[] = $fila;
     }
 }
 
 $conexion->close();
 
 header('Content-Type: application/json');
-echo json_encode($proyectos);
+echo json_encode($partes);

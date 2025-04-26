@@ -21,7 +21,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $_SESSION['usuario'] = $fila['usuario'];
             $_SESSION['nombre'] = $fila['nombre'];
             $_SESSION['puesto'] = $fila['puesto'];
-            header("Location: formulario_fifo.php");
+            header("Location: partes.php");
             exit();
         } else {
             $mensaje = "Contraseña incorrecta";

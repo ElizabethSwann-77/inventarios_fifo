@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: localhost:3306
--- Tiempo de generación: 24-04-2025 a las 21:34:08
+-- Tiempo de generación: 26-04-2025 a las 20:36:06
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -24,6 +24,29 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
+-- Estructura de tabla para la tabla `partes`
+--
+
+CREATE TABLE `partes` (
+  `numero_parte` varchar(15) NOT NULL,
+  `id_lote` varchar(10) NOT NULL,
+  `cantidad` double NOT NULL,
+  `tipo_parte` varchar(5) NOT NULL,
+  `estado_parte` varchar(15) NOT NULL,
+  `estatus` varchar(1) NOT NULL,
+  `piso` int(11) NOT NULL,
+  `id_responsable` int(11) NOT NULL,
+  `id_proyecto` int(11) NOT NULL,
+  `descripcion` varchar(300) NOT NULL,
+  `prioridad_salida` varchar(1) NOT NULL,
+  `fecha_ingreso` datetime NOT NULL,
+  `fecha_caducidad` datetime NOT NULL,
+  `fecha_ultima_modificacion` datetime NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `proyectos`
 --
 
@@ -33,7 +56,8 @@ CREATE TABLE `proyectos` (
   `id_responsable` int(11) NOT NULL,
   `descripcion` varchar(300) DEFAULT NULL,
   `fecha_registro` datetime NOT NULL,
-  `fecha_ultima_modificacion` datetime NOT NULL
+  `fecha_ultima_modificacion` datetime NOT NULL,
+  `estado` varchar(1) DEFAULT 'A'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -56,12 +80,17 @@ CREATE TABLE `usuarios` (
 --
 
 INSERT INTO `usuarios` (`id_usuario`, `usuario`, `contrasena`, `nombre`, `puesto`, `ficha`) VALUES
-(1, 'ADMIN', '$2y$10$doF1Jps4TFVO2fZWqFF75uvHtmGogl/1EpoFqLVpyUBHMKCKpLgX2', 'Administrador', 'ADM', '000001'),
-(2, 'Jahir26', '$2y$10$Czj2ul9eJ9Q4Bf9udK8re.KaVOiDcSlCm3q5nojjQYKwZQcLHxOUa', 'Jahir Villaseñor Celorio', 'EMP', '026026');
+(1, 'ADMIN', '$2y$10$doF1Jps4TFVO2fZWqFF75uvHtmGogl/1EpoFqLVpyUBHMKCKpLgX2', 'Administrador', 'ADM', '000001');
 
 --
 -- Índices para tablas volcadas
 --
+
+--
+-- Indices de la tabla `partes`
+--
+ALTER TABLE `partes`
+  ADD PRIMARY KEY (`numero_parte`);
 
 --
 -- Indices de la tabla `proyectos`
@@ -89,7 +118,7 @@ ALTER TABLE `proyectos`
 -- AUTO_INCREMENT de la tabla `usuarios`
 --
 ALTER TABLE `usuarios`
-  MODIFY `id_usuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id_usuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

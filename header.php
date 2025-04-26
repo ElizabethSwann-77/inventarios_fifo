@@ -18,8 +18,8 @@
             <div id="main-menu" class="main-menu collapse navbar-collapse">
                 <ul class="nav navbar-nav">
                     <h3 class="menu-title">Formularios</h3><!-- /.menu-title -->
-                    <li class="<?= navActive('formulario_fifo.php') ?>">
-                        <a href="formulario_fifo.php">Formulario FIFO</a>
+                    <li class="<?= navActive('partes.php') ?>">
+                        <a href="partes.php">Formulario FIFO</a>
                     </li>
                     <li class="<?= navActive('proyectos.php') ?>">
                         <a href="proyectos.php">Proyectos</a>

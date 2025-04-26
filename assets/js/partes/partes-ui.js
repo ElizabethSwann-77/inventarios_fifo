@@ -1,6 +1,6 @@
 'use strict';
 
-import * as CORE from './proyectos-core.js';
+import * as CORE from './partes-core.js';
 var $ = jQuery.noConflict();
 
 //--Todos los estilos, tamaños y textos para la vista movil--//
@@ -25,8 +25,8 @@ if (isMobile){
 //-----------------------------------------------------------//
 
 //--GRID PARA VISUALIZAR LOS ITEMS DEL INVENTARIO---------------------------------------------------------------------//
-export function getProyectos(dataSource) {
-    return $("#gridProyectos").dxDataGrid({
+export function getPiezas(dataSource) {
+    return $("#gridPiezas").dxDataGrid({
         dataSource: dataSource,
         columnsAutoWidth: true,
         showBorders: true,
@@ -37,7 +37,7 @@ export function getProyectos(dataSource) {
         columnResizingMode: 'widget',
         "export": {
             enabled: true,
-            fileName: "Proyectos",
+            fileName: "Partes",
             excelFilterEnabled: true,
             excelWrapTextEnabled: true
         },
@@ -55,7 +55,6 @@ export function getProyectos(dataSource) {
             visible: true,
             width: sizesearchPanel,
             placeholder: "Buscar",
-
         },
         paging: {
             pageSize: 10,
@@ -80,7 +79,7 @@ export function getProyectos(dataSource) {
         columnDragging: {
             allowDragging: true
         },
-        columns: getColumnasProyectos(),
+        columns: getColumnasPartes(),
         onToolbarPreparing: function (e) {
             let toolbarItems = e.toolbarOptions.items;
 
@@ -113,15 +112,13 @@ export function getProyectos(dataSource) {
     }).dxDataGrid("instance");
 }
 
-function getColumnasProyectos(){
+function getColumnasPartes(){
     let dataFields = [
         {
-            dataField: "id_proyecto",
+            dataField: "numero_parte",
             allowEditing: false,
-            width: 100,
-            minWidth: 100,
             headerCellTemplate: function (container) {
-                container.append($("<div style='white-space: normal;'>Número de<br>Proyecto</div>"));
+                container.append($("<div style='white-space: normal;'>Número de<br>Parte</div>"));
             },
             cellTemplate: function (container, options) {
                 container
@@ -133,75 +130,67 @@ function getColumnasProyectos(){
             },
         },
         {
-            dataField: "nombre",
-            headerCellTemplate: function (container) {
-                container.append($("<div style='white-space: normal;'>Nombre de<br>Proyecto</div>"));
-            },
-            minWidth: 180,
-            cellTemplate: function(container, options) {
-                const text = $("<div>").text(options.value).css({
-                    whiteSpace: "normal",   // Asegura el salto de línea
-                    wordWrap: "break-word", // Evita el desbordamiento por palabras largas
-                    overflow: "hidden",
-                    textOverflow: "ellipsis"
-                });
-                container.append(text);
-            }
-        },
-        {
-            dataField: "responsable",
-            caption: "Responsable",
-            minWidth: 180,
-            cellTemplate: function(container, options) {
-                const text = $("<div>").text(options.value).css({
-                    whiteSpace: "normal",   // Asegura el salto de línea
-                    wordWrap: "break-word", // Evita el desbordamiento por palabras largas
-                    overflow: "hidden",
-                    textOverflow: "ellipsis"
-                });
-                container.append(text);
-            }
-        },
-        {
-            dataField: "descripcion",
-            caption: "Descripción",
-            minWidth: 180,
-            cellTemplate: function(container, options) {
-                const text = $("<div>").text(options.value).css({
-                    whiteSpace: "normal",   // Asegura el salto de línea
-                    wordWrap: "break-word", // Evita el desbordamiento por palabras largas
-                    overflow: "hidden",
-                    textOverflow: "ellipsis"
-                });
-                container.append(text);
-            }
-        },
-        {
-            dataField: "fecha_registro",
-            headerCellTemplate: function (container) {
-                container.append($("<div style='white-space: normal;'>Fecha<br>Registro</div>"));
-            },
+            dataField: "id_lote",
             allowEditing: false,
-            dataType: "string",
-            width: 135,
-            minWidth: 135,
+            headerCellTemplate: function (container) {
+                container.append($("<div style='white-space: normal;'>ID<br>Lote</div>"));
+            },
+            cellTemplate: function (container, options) {
+                container
+                    .css({
+                        "text-align": "center",   // ⬅️ Centrado horizontal
+                        "vertical-align": "middle"
+                    })
+                    .text(options.text);
+            },
         },
         {
-            dataField: "fecha_ultima_modificacion",
-            headerCellTemplate: function (container) {
-                container.append($("<div style='white-space: normal;'>Fecha Ultima<br>Modificación</div>"));
-            },
+            dataField: "cantidad",
             allowEditing: false,
-            dataType: "string",
-            width: 135,
-            minWidth: 135,
+            caption: "Cantidad",
+            cellTemplate: function (container, options) {
+                container
+                    .css({
+                        "text-align": "center",   // ⬅️ Centrado horizontal
+                        "vertical-align": "middle"
+                    })
+                    .text(options.text);
+            },
+        },
+        {
+            dataField: "tipo_parte",
+            headerCellTemplate: function (container) {
+                container.append($("<div style='white-space: normal;'>Tipo de<br>Parte</div>"));
+            },
+          
+            cellTemplate: function(container, options) {
+                const text = $("<div>").text(options.value).css({
+                    whiteSpace: "normal",   // Asegura el salto de línea
+                    wordWrap: "break-word", // Evita el desbordamiento por palabras largas
+                    overflow: "hidden",
+                    textOverflow: "ellipsis"
+                });
+                container.append(text);
+            }
+        },
+        {
+            dataField: "estado_parte",
+            caption: "Estado Parte",
+            
+            cellTemplate: function(container, options) {
+                const text = $("<div>").text(options.value).css({
+                    whiteSpace: "normal",   // Asegura el salto de línea
+                    wordWrap: "break-word", // Evita el desbordamiento por palabras largas
+                    overflow: "hidden",
+                    textOverflow: "ellipsis"
+                });
+                container.append(text);
+            }
         },
         {
             dataField: "estado",
             caption: "Estado",
             allowEditing: false,
-            width: 100,
-            minWidth: 100,
             cellTemplate: function(container, options) {
                 $("<div>")
                     .css({
@@ -224,12 +213,106 @@ function getColumnasProyectos(){
 
                             // Solo ejecuta la función si el valor realmente cambió
                             if (e.previousValue !== undefined && e.previousValue !== e.value) {
-                                CORE.postEditarEstado(id_proyecto, e.value);
+                                //CORE.postEditarEstado(id_proyecto, e.value);
                             }
                         }
                     });
             }
-
+        },
+        {
+            dataField: "piso",
+            caption: "Piso",
+            cellTemplate: function(container, options) {
+                const text = $("<div>").text(options.value).css({
+                    whiteSpace: "normal",   // Asegura el salto de línea
+                    wordWrap: "break-word", // Evita el desbordamiento por palabras largas
+                    overflow: "hidden",
+                    textOverflow: "ellipsis"
+                });
+                container.append(text);
+            }
+        },
+        {
+            dataField: "responsable",
+            caption: "Responsable",
+            cellTemplate: function(container, options) {
+                const text = $("<div>").text(options.value).css({
+                    whiteSpace: "normal",   // Asegura el salto de línea
+                    wordWrap: "break-word", // Evita el desbordamiento por palabras largas
+                    overflow: "hidden",
+                    textOverflow: "ellipsis"
+                });
+                container.append(text);
+            }
+        },
+        {
+            dataField: "proyecto",
+            caption: "Proyecto",
+            cellTemplate: function(container, options) {
+                const text = $("<div>").text(options.value).css({
+                    whiteSpace: "normal",   // Asegura el salto de línea
+                    wordWrap: "break-word", // Evita el desbordamiento por palabras largas
+                    overflow: "hidden",
+                    textOverflow: "ellipsis"
+                });
+                container.append(text);
+            }
+        },
+        {
+            dataField: "descripcion",
+            caption: "Descripción",
+            cellTemplate: function(container, options) {
+                const text = $("<div>").text(options.value).css({
+                    whiteSpace: "normal",   // Asegura el salto de línea
+                    wordWrap: "break-word", // Evita el desbordamiento por palabras largas
+                    overflow: "hidden",
+                    textOverflow: "ellipsis"
+                });
+                container.append(text);
+            }
+        },
+        {
+            dataField: "prioridad_salida",
+            caption: "Prioridad Salida",
+            cellTemplate: function(container, options) {
+                const text = $("<div>").text(options.value).css({
+                    whiteSpace: "normal",   // Asegura el salto de línea
+                    wordWrap: "break-word", // Evita el desbordamiento por palabras largas
+                    overflow: "hidden",
+                    textOverflow: "ellipsis"
+                });
+                container.append(text);
+            }
+        },
+        {
+            dataField: "fecha_ingreso",
+            headerCellTemplate: function (container) {
+                container.append($("<div style='white-space: normal;'>Fecha<br>Ingreso</div>"));
+            },
+            allowEditing: false,
+            dataType: "string",
+            width: 135,
+            minWidth: 135,
+        },
+        {
+            dataField: "fecha_caducidad",
+            headerCellTemplate: function (container) {
+                container.append($("<div style='white-space: normal;'>Fecha<br>Caducidad</div>"));
+            },
+            allowEditing: false,
+            dataType: "string",
+            width: 135,
+            minWidth: 135,
+        },
+        {
+            dataField: "fecha_ultima_modificacion",
+            headerCellTemplate: function (container) {
+                container.append($("<div style='white-space: normal;'>Fecha Ultima<br>Modificación</div>"));
+            },
+            allowEditing: false,
+            dataType: "string",
+            width: 135,
+            minWidth: 135,
         },
         {
             caption: "Editar",

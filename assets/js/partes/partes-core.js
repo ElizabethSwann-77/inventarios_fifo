@@ -1,4 +1,4 @@
-import * as UI from './proyectos-ui.js';
+import * as UI from './partes-ui.js';
 
 // Desactivar el conflicto con otras librerías
 var $ = jQuery.noConflict();
@@ -112,21 +112,21 @@ $(document).ready(function() {
 });
 
 function initialize() {
-    getProyectos();
+    getPiezas();
 }
 
 
-function getProyectos() {
+function getPiezas() {
     $.ajax({
-        url: 'assets/js/proyectos/proyectos_db.php',
+        url: 'assets/js/partes/partes_db.php',
         method: 'GET',
         dataType: 'json',
         success: function(data) {
-            UI.getProyectos(data); // Mostrar en la DataGrid
+            UI.getPiezas(data); // Mostrar en la DataGrid
         },
         error: function(xhr, status, error) {
-            console.error("Error al obtener proyectos:", error);
-            toastr.error("No se pudo cargar la lista de proyectos.");
+            console.error("Error al obtener los números de parte:", error);
+            toastr.error("No se pudo cargar la lista de números de parte.");
         }
     });
 }
@@ -211,7 +211,6 @@ export async function postEditarEstado(id_proyecto, estado) {
 }
 
 
-
 function formatearFecha(fecha) {
     const f = new Date(fecha);
     const dia = String(f.getDate()).padStart(2, '0');
@@ -221,8 +220,6 @@ function formatearFecha(fecha) {
     const minutos = String(f.getMinutes()).padStart(2, '0');
     return `${dia}/${mes}/${anio} ${horas}:${minutos}`;
 }
-
-
 
 export function limpiarInputs() {
     const modal = $('#newProyect');
