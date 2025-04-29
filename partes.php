@@ -27,9 +27,10 @@ if (!isset($_SESSION['usuario'])) {
     <!-- Bootstrap -->
     <link rel="stylesheet" href="vendors/bootstrap/dist/css/bootstrap.min.css">
 
-    <!-- Estilos DevExtreme -->
+    <!-- Devexpress -->
     <link rel="stylesheet" href="https://cdn3.devexpress.com/jslib/20.1.6/css/dx.common.css">
-    <link rel="stylesheet" href="https://cdn3.devexpress.com/jslib/20.1.6/css/dx.material.blue.dark.compact.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn3.devexpress.com/jslib/20.1.6/css/dx.softblue.compact.css">
+    <link rel="stylesheet" href="assets/css/datagrid.css">
 
     <!-- FontAwesome -->
     <link href="vendors/fontawesome/5.14.0/css/all.css" rel="stylesheet">
@@ -89,82 +90,89 @@ if (!isset($_SESSION['usuario'])) {
         </div>
     </div>
 
-    <div class="modal fade" id="Proyects" tabindex="-1" aria-labelledby="ProyectsLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
-        <div class="modal-dialog modal-xl">
+    <div class="modal fade" id="Parts" tabindex="-1" aria-labelledby="PartsLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog modal-lg">
             <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="ProyectsLabel">Nuevo Registro de Proyecto</h5>
+                <div class="modal-header red-header">
+                    <h5 class="modal-title" id="PartsLabel"></h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
+                        <span aria-hidden="true" style="color:white;">&times;</span>
                     </button>
                 </div>
-                <div class="modal-body" id="modalBodyProyect">
+                <div class="modal-body" id="modalBodyParts">
                     <form action="" method="post" enctype="multipart/form-data" class="form-horizontal">
-
-                        <div class="form-group">
-                            <label class="form-control-label">Número de Parte</label>
-                            <div class="input-group">
-                                <div class="input-group-addon"><i class="fa fa-hashtag"></i></div>
-                                <input class="form-control" placeholder="Ejemplo: 01A1B2C3">
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label class="form-control-label">Número de Parte</label>
+                                <div class="input-group">
+                                    <div class="input-group-addon"><i class="fa fa-barcode"></i></div>
+                                    <input class="form-control" placeholder="Ejemplo: 01A1B2C3">
+                                </div>
                             </div>
-
-                        </div>
-                        <div class="form-group">
-                            <label class="form-control-label">Cantidad</label>
-                            <div class="input-group">
-                                <div class="input-group-addon"><i class="fa fa-calculator"></i></div>
-                                <input type="number" class="form-control" placeholder="Ejemplo: 20">
-                            </div>
-                        </div>
-                    
-
-                        <div class="form-group">
-                            <label class="form-control-label">Tipo de Parte</label>
-                            <div class="input-group">
-                                <div class="input-group-addon"><i class="fa fa-microchip"></i></div>
-                                <select class="form-control">
-                                    <option value="SMT">SMT</option>
-                                    <option value="THT">THT</option>
-                                    <option value="FG">FG</option>
-                                </select>
+                            <div class="form-group col-md-6">
+                                <label class="form-control-label">Precio</label>
+                                <div class="input-group">
+                                    <div class="input-group-addon"><i class="fa fa-dollar-sign"></i></div>
+                                    <input class="form-control" placeholder="Ejemplo: $2300">
+                                </div>
                             </div>
                         </div>
 
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label class="form-control-label">Número de Lote</label>
+                                <div class="input-group">
+                                    <div class="input-group-addon"><i class="fa fa-layer-group"></i></div>
+                                    <input class="form-control" placeholder="Ejemplo: 1A">
+                                </div>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label class="form-control-label">Piso</label>
+                                <div class="input-group">
+                                    <div class="input-group-addon"><i class="fa fa-building"></i></div>
+                                    <input class="form-control" placeholder="Ejemplo: 1">
+                                </div>
+                            </div>
+                        </div>
 
-                        <div class="form-group">
-                            <label class="form-control-label">Responsable</label>
-                            <div class="input-group">
-                                <div class="input-group-addon"><i class="fa fa-user"></i></div>
-                                <input class="form-control" placeholder="Ejemplo: PEREZ PEREZ JUAN">
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label class="form-control-label">Tipo de Parte</label>
+                                <div class="input-group">
+                                    <div class="input-group-addon"><i class="fa fa-microchip"></i></div>
+                                    <select class="form-control">
+                                        <option value="SMT">SMT</option>
+                                        <option value="THT">THT</option>
+                                        <option value="FG">FG</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label class="form-control-label">Proyecto</label>
+                                <div class="input-group">
+                                    <div class="input-group-addon"><i class="fa fa-project-diagram"></i></div>
+                                    <select class="form-control" id="select-proyectos">
+                                    </select>
+                                </div>
                             </div>
                         </div>
 
                         <div class="form-group">
-                            <label class="form-control-label">Proyecto</label>
+                            <label class="form-control-label">Descripción del Número de Parte</label>
                             <div class="input-group">
-                                <div class="input-group-addon"><i class="fa fa-sitemap"></i></div>
-                                <input class="form-control" placeholder="Ejemplo: LINEA NISSAN">
+                                <div class="input-group-addon"><i class="fa fa-keyboard"></i></div>
+                                <textarea id="descripcionProyecto" class="form-control" rows="4" placeholder="Descripción (opcional)"></textarea>
                             </div>
                         </div>
-
-                        <div class="form-group">
-                            <label class="form-control-label">Tipo de pieza</label>
-                            <div class="input-group">
-                                <div class="input-group-addon"><i class="fa fa-tasks"></i></div>
-                                <select class="form-control">
-                                    <option value="PCB">PCB</option>
-                                    <option value="Housing">Housing</option>
-                                    <option value="PCBA">PCBA</option>
-                                    <option value="FG">FG</option>
-                                </select>
-                            </div>
-                        </div>
-
                     </form>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-                    <button type="button" class="btn btn-primary" id="btnSaveProyect">Guardar</button>
+                <div class="modal-footer red-footer d-flex justify-content-center gap-2">
+                    <div style="width: 150px;">
+                        <button type="button" class="btn btn-secondary w-100" data-dismiss="modal">Cerrar</button>
+                    </div>
+                    <div style="width: 150px;">
+                        <button type="button" class="btn btn-primary w-100" id="btnSaveParts">Guardar</button>
+                    </div>
                 </div>
             </div>
         </div>

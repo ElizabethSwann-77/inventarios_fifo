@@ -98,9 +98,9 @@ export function getProyectos(dataSource) {
                         class: "btn-custom-resaltado icon-button-wrapper"
                     },
                     onClick: function(e) {
+                        CORE.limpiarInputs();
                         modoProyecto = 'insert';
                         idProyectoEditando = null;
-                        CORE.limpiarInputs();
                         $("#ProyectsLabel").text("Nuevo Registro de Proyecto");
                         $("#btnSaveProyect").text("Guardar");
                         $('#Proyects').modal('show');
@@ -221,15 +221,19 @@ function getColumnasProyectos(){
                         value: options.value, // No asignamos un valor por defecto distinto
                         onValueChanged: function(e) {
                             let id_proyecto = options.data.id_proyecto;
-
-                            // Solo ejecuta la función si el valor realmente cambió
+                        
                             if (e.previousValue !== undefined && e.previousValue !== e.value) {
                                 CORE.postEditarEstado(id_proyecto, e.value);
+                        
+                                // Actualiza el valor en el dataSource
+                                options.data.estado = e.value;
+                        
+                                // Si tu grid necesita reflejar el cambio visualmente:
+                                options.component.refresh(); // Opcional, solo si no se ve reflejado automáticamente
                             }
                         }
                     });
             }
-
         },
         {
             caption: "Editar",
@@ -248,6 +252,7 @@ function getColumnasProyectos(){
                             .css("cursor", "pointer")
                             .attr("title", "Editar Registro")
                             .on("click", function () {
+                                CORE.limpiarInputs();
                                 const data = options.data;
                                 modoProyecto = 'edit';
                                 idProyectoEditando = data.id_proyecto;

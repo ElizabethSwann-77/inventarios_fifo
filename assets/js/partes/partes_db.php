@@ -8,6 +8,42 @@ if (!isset($_SESSION['usuario'])) {
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inventarios_fifo/config/conexion.php';
 
+// 🔍 MODO SELECT (GET)
+$sql = "SELECT 
+            p.numero_parte, 
+            p.id_lote, 
+            p.piso, 
+            p.tipo_parte,
+            p.precio,   
+            u.nombre AS responsable, 
+            pr.nombre AS proyecto, 
+            p.descripcion, 
+            DATE_FORMAT(p.fecha_ingreso, '%d/%m/%Y %H:%i') AS fecha_ingreso, 
+            DATE_FORMAT(p.fecha_ultima_modificacion, '%d/%m/%Y %H:%i') AS fecha_ultima_modificacion
+        FROM partes p 
+        INNER JOIN usuarios u ON p.id_responsable = u.id_usuario
+        INNER JOIN proyectos pr ON pr.id_proyecto = p.id_proyecto";
+
+// Agregar filtro si no es ADM
+if (!isset($_SESSION['puesto']) || $_SESSION['puesto'] === 'EMP') {
+    $id_usuario = intval($_SESSION['id_usuario']); // Asegúrate de sanitizar el ID
+    $sql .= " WHERE p.id_responsable = $id_usuario";
+}
+
+$resultado = $conexion->query($sql);
+$partes = [];
+
+if ($resultado && $resultado->num_rows > 0) {
+    while ($fila = $resultado->fetch_assoc()) {
+        $partes[] = $fila;
+    }
+}
+
+$conexion->close();
+
+header('Content-Type: application/json');
+echo json_encode($partes);
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $input = json_decode(file_get_contents("php://input"), true);
     $action = $input['action'] ?? null;
@@ -105,42 +141,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     exit();
 }
 
-// 🔍 MODO SELECT (GET)
-$sql = "SELECT 
-            p.numero_parte, 
-            p.id_lote, 
-            p.cantidad,
-            p.tipo_parte,
-            p.estado_parte,   
-            p.estatus, 
-            p.piso, 
-            u.nombre AS responsable, 
-            pr.nombre AS proyecto, 
-            p.descripcion, 
-            p.prioridad_salida,
-            DATE_FORMAT(p.fecha_ingreso, '%d/%m/%Y %H:%i') AS fecha_ingreso, 
-            DATE_FORMAT(p.fecha_caducidad, '%d/%m/%Y %H:%i') AS fecha_caducidad, 
-            DATE_FORMAT(p.fecha_ultima_modificacion, '%d/%m/%Y %H:%i') AS fecha_ultima_modificacion
-        FROM partes p 
-        INNER JOIN usuarios u ON p.id_responsable = u.id_usuario
-        INNER JOIN proyectos pr ON pr.id_proyecto = p.id_proyecto";
 
-// Agregar filtro si no es ADM
-if (!isset($_SESSION['puesto']) || $_SESSION['puesto'] === 'EMP') {
-    $id_usuario = intval($_SESSION['id_usuario']); // Asegúrate de sanitizar el ID
-    $sql .= " WHERE p.id_responsable = $id_usuario";
-}
-
-$resultado = $conexion->query($sql);
-$partes = [];
-
-if ($resultado && $resultado->num_rows > 0) {
-    while ($fila = $resultado->fetch_assoc()) {
-        $partes[] = $fila;
-    }
-}
-
-$conexion->close();
-
-header('Content-Type: application/json');
-echo json_encode($partes);

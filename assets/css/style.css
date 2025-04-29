@@ -2703,7 +2703,7 @@ aside.left-panel {
 
 .btn-custom-resaltado {
   background-color: #28a745 !important; /* verde Bootstrap */
-  color: #363640FF  !important;
+  color: #EBEEF1FF  !important;
   font-weight: bold;
   border: none;
   border-radius: 2px;
@@ -2716,7 +2716,7 @@ aside.left-panel {
 }
 
 .icon-button-wrapper .dx-icon {
-  color: #363640FF !important;
+  color: #EBEEF1FF !important;
 }
 
 .dx-datagrid .dx-header-filter {

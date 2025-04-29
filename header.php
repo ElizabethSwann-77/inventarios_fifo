@@ -19,7 +19,7 @@
                 <ul class="nav navbar-nav">
                     <h3 class="menu-title">Formularios</h3><!-- /.menu-title -->
                     <li class="<?= navActive('partes.php') ?>">
-                        <a href="partes.php">Formulario FIFO</a>
+                        <a href="partes.php">Número de Partes</a>
                     </li>
                     <li class="<?= navActive('proyectos.php') ?>">
                         <a href="proyectos.php">Proyectos</a>

@@ -131,6 +131,33 @@ function getPiezas() {
     });
 }
 
+export function getProyectos() {
+    $.ajax({
+        url: 'assets/js/partes/select_proyecto.php',
+        method: 'GET',
+        dataType: 'json',
+        success: function(data) {
+            const select = $('#select-proyectos');
+            select.empty(); // Limpia opciones anteriores
+            select.append('<option value="">Selecciona un proyecto</option>');
+
+            data.forEach(function(proyecto) {
+                select.append(
+                    $('<option>', {
+                        value: proyecto.id_proyecto,
+                        text: proyecto.nombre
+                    })
+                );
+            });
+        },
+        error: function(xhr, status, error) {
+            console.error("Error al obtener los proyectos:", error);
+            toastr.error("No se pudo cargar la lista de proyectos.");
+        }
+    });
+}
+
+
     
 async function postNuevoProyecto(nombre, descripcion) {
     const response = await fetch('assets/js/proyectos/proyectos_db.php', {

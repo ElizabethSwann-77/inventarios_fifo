@@ -69,6 +69,7 @@ $(document).ready(function() {
                     nombre: nombre,
                     descripcion: descripcion,
                     responsable: resultado.responsable ?? 'Tú',
+                    estado: dataSource.estado ?? 'A',
                     fecha_registro: formatearFecha(new Date()),
                     fecha_ultima_modificacion: formatearFecha(new Date())
                 };
@@ -210,8 +211,6 @@ export async function postEditarEstado(id_proyecto, estado) {
     }
 }
 
-
-
 function formatearFecha(fecha) {
     const f = new Date(fecha);
     const dia = String(f.getDate()).padStart(2, '0');
@@ -222,19 +221,7 @@ function formatearFecha(fecha) {
     return `${dia}/${mes}/${anio} ${horas}:${minutos}`;
 }
 
-
-
 export function limpiarInputs() {
-    const modal = $('#newProyect');
-    
-    // Limpiar inputs de texto
-    modal.find('input[type="text"], textarea, select').each(function () {
-        $(this).val('');
-    });
-
-    // También podrías quitar clases de validación si estás usando
-    modal.find('.is-valid, .is-invalid').removeClass('is-valid is-invalid');
+    $('#nombreProyecto').val('');
+    $('#descripcionProyecto').val('');
 }
-
-
-

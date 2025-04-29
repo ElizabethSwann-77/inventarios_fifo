@@ -27,9 +27,10 @@ if (!isset($_SESSION['usuario'])) {
     <!-- Bootstrap -->
     <link rel="stylesheet" href="vendors/bootstrap/dist/css/bootstrap.min.css">
 
-    <!-- Estilos DevExtreme -->
+    <!-- Devexpress -->
     <link rel="stylesheet" href="https://cdn3.devexpress.com/jslib/20.1.6/css/dx.common.css">
-    <link rel="stylesheet" href="https://cdn3.devexpress.com/jslib/20.1.6/css/dx.material.blue.dark.compact.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn3.devexpress.com/jslib/20.1.6/css/dx.softblue.compact.css">
+    <link rel="stylesheet" href="assets/css/datagrid.css">
 
     <!-- FontAwesome -->
     <link href="vendors/fontawesome/5.14.0/css/all.css" rel="stylesheet">
@@ -90,10 +91,10 @@ if (!isset($_SESSION['usuario'])) {
     </div>
 
     <div class="modal fade" id="Proyects" tabindex="-1" aria-labelledby="ProyectsLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
-        <div class="modal-dialog modal-xl">
+        <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="ProyectsLabel">Nuevo Registro de Proyecto</h5>
+                    <h5 class="modal-title" id="ProyectsLabel"></h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -118,7 +119,7 @@ if (!isset($_SESSION['usuario'])) {
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-                    <button type="button" class="btn btn-primary" id="btnSaveProyect">Guardar</button>
+                    <button type="button" class="btn btn-primary" id="btnSaveProyect"></button>
                 </div>
             </div>
         </div>
