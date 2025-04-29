@@ -107,7 +107,16 @@ if (!isset($_SESSION['usuario'])) {
                                 <div class="input-group-addon"><i class="fa fa-hashtag"></i></div>
                                 <input class="form-control" placeholder="Ejemplo: 01A1B2C3">
                             </div>
+
                         </div>
+                        <div class="form-group">
+                            <label class="form-control-label">Cantidad</label>
+                            <div class="input-group">
+                                <div class="input-group-addon"><i class="fa fa-calculator"></i></div>
+                                <input type="number" class="form-control" placeholder="Ejemplo: 20">
+                            </div>
+                        </div>
+                    
 
                         <div class="form-group">
                             <label class="form-control-label">Tipo de Parte</label>
@@ -121,13 +130,6 @@ if (!isset($_SESSION['usuario'])) {
                             </div>
                         </div>
 
-                        <div class="form-group">
-                            <label class="form-control-label">Cantidad</label>
-                            <div class="input-group">
-                                <div class="input-group-addon"><i class="fa fa-calculator"></i></div>
-                                <input type="number" class="form-control" placeholder="Ejemplo: 20">
-                            </div>
-                        </div>
 
                         <div class="form-group">
                             <label class="form-control-label">Responsable</label>
@@ -146,7 +148,7 @@ if (!isset($_SESSION['usuario'])) {
                         </div>
 
                         <div class="form-group">
-                            <label class="form-control-label">Estado del Proyecto</label>
+                            <label class="form-control-label">Tipo de pieza</label>
                             <div class="input-group">
                                 <div class="input-group-addon"><i class="fa fa-tasks"></i></div>
                                 <select class="form-control">
