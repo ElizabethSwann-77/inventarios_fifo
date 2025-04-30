@@ -93,7 +93,7 @@ if (!isset($_SESSION['usuario'])) {
     <div class="modal fade" id="Parts" tabindex="-1" aria-labelledby="PartsLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
-                <div class="modal-header red-header">
+                <div class="modal-header">
                     <h5 class="modal-title" id="PartsLabel"></h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true" style="color:white;">&times;</span>
@@ -106,14 +106,20 @@ if (!isset($_SESSION['usuario'])) {
                                 <label class="form-control-label">Número de Parte</label>
                                 <div class="input-group">
                                     <div class="input-group-addon"><i class="fa fa-barcode"></i></div>
-                                    <input class="form-control" placeholder="Ejemplo: 01A1B2C3">
+                                    <input class="form-control" placeholder="Ejemplo: 01A1B2C3" id="parte" required>
+                                    <div class="invalid-feedback">
+                                        Por favor ingresa el número de parte.
+                                    </div>
                                 </div>
                             </div>
                             <div class="form-group col-md-6">
                                 <label class="form-control-label">Precio</label>
                                 <div class="input-group">
                                     <div class="input-group-addon"><i class="fa fa-dollar-sign"></i></div>
-                                    <input class="form-control" placeholder="Ejemplo: $2300">
+                                    <input type="number" class="form-control" placeholder="Ejemplo: $2300" id="precio" required>
+                                    <div class="invalid-feedback">
+                                        Por favor ingresa el precio.
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -123,14 +129,20 @@ if (!isset($_SESSION['usuario'])) {
                                 <label class="form-control-label">Número de Lote</label>
                                 <div class="input-group">
                                     <div class="input-group-addon"><i class="fa fa-layer-group"></i></div>
-                                    <input class="form-control" placeholder="Ejemplo: 1A">
+                                    <input class="form-control" placeholder="Ejemplo: 1A" id="lote" required>
+                                    <div class="invalid-feedback">
+                                        Por favor ingresa el lote.
+                                    </div>
                                 </div>
                             </div>
                             <div class="form-group col-md-6">
                                 <label class="form-control-label">Piso</label>
                                 <div class="input-group">
                                     <div class="input-group-addon"><i class="fa fa-building"></i></div>
-                                    <input class="form-control" placeholder="Ejemplo: 1">
+                                    <input class="form-control" placeholder="Ejemplo: 1" id="piso" required>
+                                    <div class="invalid-feedback">
+                                        Por favor ingresa el piso.
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -140,7 +152,7 @@ if (!isset($_SESSION['usuario'])) {
                                 <label class="form-control-label">Tipo de Parte</label>
                                 <div class="input-group">
                                     <div class="input-group-addon"><i class="fa fa-microchip"></i></div>
-                                    <select class="form-control">
+                                    <select class="form-control" id="select_tipo">
                                         <option value="SMT">SMT</option>
                                         <option value="THT">THT</option>
                                         <option value="FG">FG</option>
@@ -151,8 +163,11 @@ if (!isset($_SESSION['usuario'])) {
                                 <label class="form-control-label">Proyecto</label>
                                 <div class="input-group">
                                     <div class="input-group-addon"><i class="fa fa-project-diagram"></i></div>
-                                    <select class="form-control" id="select-proyectos">
+                                    <select class="form-control" id="select_proyecto">
                                     </select>
+                                    <div class="invalid-feedback">
+                                        Por favor selecciona un proyecto.
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -161,18 +176,14 @@ if (!isset($_SESSION['usuario'])) {
                             <label class="form-control-label">Descripción del Número de Parte</label>
                             <div class="input-group">
                                 <div class="input-group-addon"><i class="fa fa-keyboard"></i></div>
-                                <textarea id="descripcionProyecto" class="form-control" rows="4" placeholder="Descripción (opcional)"></textarea>
+                                <textarea id="descripcion" class="form-control" rows="4" placeholder="Descripción (opcional)"></textarea>
                             </div>
                         </div>
                     </form>
                 </div>
-                <div class="modal-footer red-footer d-flex justify-content-center gap-2">
-                    <div style="width: 150px;">
-                        <button type="button" class="btn btn-secondary w-100" data-dismiss="modal">Cerrar</button>
-                    </div>
-                    <div style="width: 150px;">
-                        <button type="button" class="btn btn-primary w-100" id="btnSaveParts">Guardar</button>
-                    </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-primary" id="btnSaveParts"></button>
                 </div>
             </div>
         </div>

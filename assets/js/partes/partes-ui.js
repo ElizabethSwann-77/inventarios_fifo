@@ -119,31 +119,13 @@ function getColumnasPartes(){
             dataField: "numero_parte",
             allowEditing: false,
             headerCellTemplate: function (container) {
-                container.append($("<div style='white-space: normal;'>Número de<br>Parte</div>"));
-            },
-            cellTemplate: function (container, options) {
-                container
-                    .css({
-                        "text-align": "center",   // ⬅️ Centrado horizontal
-                        "vertical-align": "middle"
-                    })
-                    .text(options.text);
+                container.append($("<div style='white-space: normal;'>Número<br>de Parte</div>"));
             },
         },
         {
             dataField: "id_lote",
             allowEditing: false,
-            headerCellTemplate: function (container) {
-                container.append($("<div style='white-space: normal;'>ID<br>Lote</div>"));
-            },
-            cellTemplate: function (container, options) {
-                container
-                    .css({
-                        "text-align": "center",   // ⬅️ Centrado horizontal
-                        "vertical-align": "middle"
-                    })
-                    .text(options.text);
-            },
+            caption: "ID Lote",
         },
         {
             dataField: "piso",
@@ -179,17 +161,23 @@ function getColumnasPartes(){
             headerCellTemplate: function (container) {
                 container.append($("<div style='white-space: normal;'>Precio de<br>la pieza</div>"));
             },
-          
-            cellTemplate: function(container, options) {
-                const text = $("<div>").text(options.value).css({
-                    whiteSpace: "normal",   // Asegura el salto de línea
-                    wordWrap: "break-word", // Evita el desbordamiento por palabras largas
+            cellTemplate: function (container, options) {
+                let valor = parseFloat(options.value);
+                
+                // Verificamos que sea un número válido
+                let valorFormateado = isNaN(valor) ? '' : `$ ${valor.toString().replace(/\.?0+$/, "")}`;
+            
+                const text = $("<div>").text(valorFormateado).css({
+                    whiteSpace: "normal",
+                    wordWrap: "break-word",
                     overflow: "hidden",
                     textOverflow: "ellipsis"
                 });
+            
                 container.append(text);
             }
-        },
+            
+        },        
         {
             dataField: "responsable",
             caption: "Responsable",
@@ -202,6 +190,11 @@ function getColumnasPartes(){
                 });
                 container.append(text);
             }
+        },
+        {
+            dataField: "id_proyecto",
+            caption: "Proyecto",
+            visible: false
         },
         {
             dataField: "proyecto",
@@ -266,20 +259,28 @@ function getColumnasPartes(){
                             .css("cursor", "pointer")
                             .attr("title", "Editar Registro")
                             .on("click", function () {
-                                const data = options.data;
-                                modoParte = 'edit';
-                                idParteEditando = data.numero_parte;
-            
-                                // Cargar los datos en el modal
-                                $("#nombreProyecto").val(data.nombre);
-                                $("#descripcionProyecto").val(data.descripcion);
-            
-                                // Ajustar encabezado y botón
-                                $("#ProyectsLabel").text("Editar Proyecto");
-                                $("#btnSaveProyect").text("Actualizar");
-            
-                                $('#Proyects').modal('show');
-                            })
+                                // Llama a getProyectos y actualiza el select
+                                CORE.getProyectos(function() {
+                                    const data = options.data;
+                                    modoParte = 'edit';
+                                    idParteEditando = data.numero_parte;
+                            
+                                    // Cargar los datos en el modal
+                                    $("#parte").val(data.numero_parte);
+                                    $("#precio").val(data.precio);
+                                    $("#lote").val(data.id_lote);
+                                    $("#piso").val(data.piso);
+                                    $("#select_tipo").val(data.tipo_parte);
+                                    $("#select_proyecto").val(data.id_proyecto);
+                                    $("#descripcion").val(data.descripcion);
+                            
+                                    // Ajustar encabezado y botón
+                                    $("#PartsLabel").text("Editar Número de Parte");
+                                    $("#btnSaveParts").text("Actualizar");
+                            
+                                    $('#Parts').modal('show');
+                                });
+                            })    
                     )
                     .appendTo(container);
             }

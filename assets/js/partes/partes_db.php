@@ -8,42 +8,6 @@ if (!isset($_SESSION['usuario'])) {
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inventarios_fifo/config/conexion.php';
 
-// 🔍 MODO SELECT (GET)
-$sql = "SELECT 
-            p.numero_parte, 
-            p.id_lote, 
-            p.piso, 
-            p.tipo_parte,
-            p.precio,   
-            u.nombre AS responsable, 
-            pr.nombre AS proyecto, 
-            p.descripcion, 
-            DATE_FORMAT(p.fecha_ingreso, '%d/%m/%Y %H:%i') AS fecha_ingreso, 
-            DATE_FORMAT(p.fecha_ultima_modificacion, '%d/%m/%Y %H:%i') AS fecha_ultima_modificacion
-        FROM partes p 
-        INNER JOIN usuarios u ON p.id_responsable = u.id_usuario
-        INNER JOIN proyectos pr ON pr.id_proyecto = p.id_proyecto";
-
-// Agregar filtro si no es ADM
-if (!isset($_SESSION['puesto']) || $_SESSION['puesto'] === 'EMP') {
-    $id_usuario = intval($_SESSION['id_usuario']); // Asegúrate de sanitizar el ID
-    $sql .= " WHERE p.id_responsable = $id_usuario";
-}
-
-$resultado = $conexion->query($sql);
-$partes = [];
-
-if ($resultado && $resultado->num_rows > 0) {
-    while ($fila = $resultado->fetch_assoc()) {
-        $partes[] = $fila;
-    }
-}
-
-$conexion->close();
-
-header('Content-Type: application/json');
-echo json_encode($partes);
-
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $input = json_decode(file_get_contents("php://input"), true);
     $action = $input['action'] ?? null;
@@ -56,47 +20,72 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     switch ($action) {
         case 'insert':
-            $nombre = $conexion->real_escape_string($input['nombre']);
+            $numero_parte = $conexion->real_escape_string($input['numero_parte']);
+            $precio = $conexion->real_escape_string($input['precio']);
+            $id_lote = $conexion->real_escape_string($input['id_lote']);
+            $piso = $conexion->real_escape_string($input['piso']);
+            $tipo_parte = $conexion->real_escape_string($input['tipo_parte']);
+            $id_proyecto = $conexion->real_escape_string($input['id_proyecto']);
             $descripcion = $conexion->real_escape_string($input['descripcion']);
-            $id_responsable = $_SESSION['id_usuario']; // Ajusta según tu sesión
+            $id_responsable = $_SESSION['id_usuario']; // o ajusta según sesión
 
-            $sql = "INSERT INTO proyectos (nombre, descripcion, id_responsable, fecha_registro, fecha_ultima_modificacion)
-                    VALUES ('$nombre', '$descripcion', '$id_responsable', NOW(), NOW())";
+            $sql = "INSERT INTO partes (numero_parte, id_lote, tipo_parte, precio, piso, id_responsable, id_proyecto, descripcion, fecha_ingreso, fecha_ultima_modificacion)
+                    VALUES ('$numero_parte', '$id_lote', '$tipo_parte','$precio', '$piso', '$id_responsable', '$id_proyecto', '$descripcion', NOW(), NOW())";
 
             if ($conexion->query($sql)) {
                 echo json_encode([
                     'success' => true,
-                    'id_proyecto' => $conexion->insert_id,
-                    'responsable' => $_SESSION['nombre'] // Ajusta si el nombre del usuario está en otra parte
+                    'numero_parte' => $numero_parte,
+                    'lote' => $id_lote,
+                    'piso' => $piso,
+                    'tipo' => $tipo_parte,
+                    'precio' => $precio,
+                    'responsable' => $_SESSION['nombre'],
+                    'proyecto' => obtenerNombreProyecto($id_proyecto)
                 ]);
+                
                 exit();
             } else {
                 http_response_code(500);
-                echo json_encode(['error' => 'Error al ejecutar la consulta']);
+                echo json_encode(['success' => false, 'error' => 'Error al ejecutar la consulta', 'sql' => $sql]);
+                exit();
             }
 
             break;
-
+            
             case 'update':
-                $id = intval($input['id_proyecto']);
-                $nombre = $conexion->real_escape_string($input['nombre']);
+                $numero_parte = $conexion->real_escape_string($input['numero_parte']);
+                $precio = $conexion->real_escape_string($input['precio']);
+                $id_lote = $conexion->real_escape_string($input['id_lote']);
+                $piso = $conexion->real_escape_string($input['piso']);
+                $tipo_parte = $conexion->real_escape_string($input['tipo_parte']);
+                $id_proyecto = $conexion->real_escape_string($input['id_proyecto']);
                 $descripcion = $conexion->real_escape_string($input['descripcion']);
             
-                $sql = "UPDATE proyectos 
-                        SET nombre = '$nombre', descripcion = '$descripcion', fecha_ultima_modificacion = NOW()
-                        WHERE id_proyecto = $id";
+                $sql = "UPDATE partes 
+                        SET numero_parte = '$numero_parte',
+                            id_lote = '$id_lote',
+                            tipo_parte = '$tipo_parte',
+                            precio = '$precio',
+                            piso = '$piso',
+                            id_proyecto = '$id_proyecto',
+                            descripcion = '$descripcion',
+                            fecha_ultima_modificacion = NOW()
+                        WHERE numero_parte = '$numero_parte'";  // Usamos numero_parte en lugar de id_parte
             
                 if ($conexion->query($sql)) {
-                    echo json_encode(["success" => true]);
+                    echo json_encode([
+                        "success" => true,
+                        "proyecto" => obtenerNombreProyecto($id_proyecto)
+                    ]);
                     exit();
                 } else {
-                    echo json_encode([
-                        "success" => false,
-                        "error" => "Error en la consulta: " . $conexion->error,
-                        "sql" => $sql
-                    ]);
+                    echo json_encode(["success" => false, "error" => $conexion->error, "sql" => $sql]);
+                    exit();
                 }
+            
                 break;
+            
 
             case 'updateStatus':
                 $id = intval($input['id_proyecto']);
@@ -141,4 +130,52 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     exit();
 }
 
+
+function obtenerNombreProyecto($id_proyecto) {
+    global $conexion;
+    $stmt = $conexion->prepare("SELECT nombre FROM proyectos WHERE id_proyecto = ?");
+    $stmt->bind_param("i", $id_proyecto);
+    $stmt->execute();
+    $stmt->bind_result($nombre);
+    $stmt->fetch();
+    $stmt->close();
+    return $nombre;
+}
+
+// 🔍 MODO SELECT (GET)
+$sql = "SELECT 
+            p.numero_parte, 
+            p.id_lote, 
+            p.piso, 
+            p.tipo_parte,
+            p.precio,   
+            u.nombre AS responsable, 
+            p.id_proyecto,
+            pr.nombre AS proyecto, 
+            p.descripcion, 
+            DATE_FORMAT(p.fecha_ingreso, '%d/%m/%Y %H:%i') AS fecha_ingreso, 
+            DATE_FORMAT(p.fecha_ultima_modificacion, '%d/%m/%Y %H:%i') AS fecha_ultima_modificacion
+        FROM partes p 
+        INNER JOIN usuarios u ON p.id_responsable = u.id_usuario
+        INNER JOIN proyectos pr ON pr.id_proyecto = p.id_proyecto";
+
+// Agregar filtro si no es ADM
+if (!isset($_SESSION['puesto']) || $_SESSION['puesto'] === 'EMP') {
+    $id_usuario = intval($_SESSION['id_usuario']); // Asegúrate de sanitizar el ID
+    $sql .= " WHERE p.id_responsable = $id_usuario";
+}
+
+$resultado = $conexion->query($sql);
+$partes = [];
+
+if ($resultado && $resultado->num_rows > 0) {
+    while ($fila = $resultado->fetch_assoc()) {
+        $partes[] = $fila;
+    }
+}
+
+$conexion->close();
+
+header('Content-Type: application/json');
+echo json_encode($partes);
 

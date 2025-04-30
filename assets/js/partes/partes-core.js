@@ -31,16 +31,39 @@ $(document).ready(function() {
 
     initialize();
 
-    $('#nombreProyecto').on('input', function () {
+    $('#parte').on('input', function () {
         const valor = $(this).val().trim();
-        if (valor.length >= 101) {
-            $(this).val(valor.substring(0, 100));  // Limitar a 100 caracteres
-            toastr.warning("El nombre del proyecto no puede ser mayor a 100 caracteres");
+        if (valor.length >= 10) {
+            $(this).val(valor.substring(0, 9));  // Limitar a  9 caracteres
+            toastr.warning("El número de parte no puede ser mayor a 9 caracteres");
         }
     });
 
+    $('#lote').on('input', function () {
+        const valor = $(this).val().trim();
+        if (valor.length >= 4) {
+            $(this).val(valor.substring(0, 3));  // Limitar a  3 caracteres
+            toastr.warning("El lote no puede ser mayor a 3 caracteres");
+        }
+    });
 
-    $('#descripcionProyecto').on('input', function () {
+    $('#precio').on('input', function () {
+        const valor = $(this).val();
+    
+        // Verifica si hay un punto decimal
+        if (valor.includes('.')) {
+            const [entero, decimal] = valor.split('.');
+    
+            // Si hay más de 3 decimales, los recorta
+            if (decimal.length > 3) {
+                $(this).val(`${entero}.${decimal.substring(0, 3)}`);
+                toastr.warning("Solo se permiten hasta 3 decimales en el precio.");
+            }
+        }
+    });
+    
+
+    $('#descripcion').on('input', function () {
         const valor = $(this).val().trim();
         if (valor.length >= 301) {
             $(this).val(valor.substring(0, 300));  // Limitar a  300 caracteres
@@ -48,65 +71,119 @@ $(document).ready(function() {
         }
     });
 
-    $("#btnSaveProyect").click(async function () {
-        const nombre = $("#nombreProyecto").val().trim();
-        const descripcion = $("#descripcionProyecto").val().trim();
+    $("#btnSaveParts").click(async function () {
+        const numero_parte = ($("#parte").val() || "").trim();
+        const precio = ($("#precio").val() || "").trim();
+        const id_lote = ($("#lote").val() || "").trim();
+        const piso = ($("#piso").val() || "").trim();
+        const tipo_parte = ($("#select_tipo").val() || "").trim();
+        const id_proyecto = ($("#select_proyecto").val() || "").trim();
+        const descripcion = ($("#descripcion").val() || "").trim();
+        
+        let allFieldsValid = true;
     
-        if (!nombre) {
-            toastr.warning('El nombre del proyecto es obligatorio.');
-            return;
+        // Limpia los posibles estilos anteriores
+        $(".form-control").removeClass("is-invalid");
+    
+        // Verifica los campos obligatorios
+        if (!numero_parte || !precio || !id_lote || !piso || !id_proyecto) {
+            if (!numero_parte) {
+                $("#parte").addClass("is-invalid");
+            }
+            if (!precio) {
+                $("#precio").addClass("is-invalid");
+            }
+            if (!id_lote) {
+                $("#lote").addClass("is-invalid");
+            }
+            if (!piso) {
+                $("#piso").addClass("is-invalid");
+            }
+            if (!id_proyecto) {
+                $("#select_proyecto").addClass("is-invalid");
+            }
+            toastr.warning('Todos los campos obligatorios deben estar llenos.');
+            allFieldsValid = false;
         }
     
-        if (UI.modoProyecto === 'insert') {
-            const resultado = await postNuevoProyecto(nombre, descripcion);
+        // Si hay campos vacíos, no procesamos los datos
+        if (!allFieldsValid) return;
+    
+        const datos = {
+            numero_parte,
+            precio,
+            id_lote,
+            piso,
+            tipo_parte,
+            id_proyecto,
+            descripcion
+        };
+    
+        if (UI.modoParte === 'insert') {
+            const resultado = await postNuevaParte(datos);
     
             if (resultado.success) {
-                const grid = $("#gridProyectos").dxDataGrid("instance");
+                const grid = $("#gridPiezas").dxDataGrid("instance");
                 const dataSource = grid.option("dataSource");
     
-                const nuevoProyecto = {
-                    id_proyecto: resultado.id_proyecto ?? 0,
-                    nombre: nombre,
+                const nuevaParte = {
+                    numero_parte: resultado.numero_parte ?? 0,
+                    id_lote: resultado.lote ?? 0,
+                    piso: resultado.piso ?? 0,
+                    tipo_parte: resultado.tipo ?? 'SMT',
+                    precio: resultado.precio ?? 0,
+                    responsable: resultado.responsable,
+                    proyecto: resultado.proyecto,
                     descripcion: descripcion,
-                    responsable: resultado.responsable ?? 'Tú',
-                    fecha_registro: formatearFecha(new Date()),
+                    fecha_ingreso: formatearFecha(new Date()),
                     fecha_ultima_modificacion: formatearFecha(new Date())
                 };
     
-                dataSource.push(nuevoProyecto);
+                dataSource.push(nuevaParte);
                 grid.refresh();
     
                 limpiarInputs();
-                $('#Proyects').modal('hide');
-                toastr.success('Proyecto registrado exitosamente.');
+                $('#Parts').modal('hide');
+                toastr.success('Número de parte registrado exitosamente.');
             } else {
                 toastr.error('No se pudo registrar el proyecto.');
             }
-        } else if (UI.modoProyecto === 'edit') {
-            const resultado = await postEditarProyecto(UI.idProyectoEditando, nombre, descripcion);
-    
+        } else if (UI.modoParte === 'edit') {
+            const datos = {
+                numero_parte: UI.idParteEditando,  // Usamos numero_parte como identificador
+                precio,
+                id_lote,
+                piso,
+                tipo_parte,
+                id_proyecto,
+                descripcion
+            };
+        
+            const resultado = await postEditarParte(datos);
+        
             if (resultado.success) {
-                const grid = $("#gridProyectos").dxDataGrid("instance");
+                const grid = $("#gridPiezas").dxDataGrid("instance");
                 const dataSource = grid.option("dataSource");
-    
-                // Actualiza el proyecto en la grilla
-                const index = dataSource.findIndex(p => p.id_proyecto === UI.idProyectoEditando);
+        
+                const index = dataSource.findIndex(p => p.numero_parte === UI.idParteEditando);  // Comparamos por numero_parte
                 if (index !== -1) {
-                    dataSource[index].nombre = nombre;
-                    dataSource[index].descripcion = descripcion;
-                    dataSource[index].fecha_ultima_modificacion = formatearFecha(new Date());
+                    dataSource[index] = {
+                        ...dataSource[index],
+                        ...datos,
+                        fecha_ultima_modificacion: formatearFecha(new Date())
+                    };
                 }
-    
+        
                 grid.refresh();
-    
                 limpiarInputs();
-                $('#Proyects').modal('hide');
-                toastr.success('Proyecto actualizado correctamente.');
+                $('#Parts').modal('hide');
+                toastr.success('Número de parte actualizado correctamente.');
             } else {
-                toastr.error('No se pudo actualizar el proyecto.');
+                toastr.error('No se pudo actualizar la parte.');
             }
-        }
+        }        
     });
+    
     
 
 });
@@ -131,15 +208,15 @@ function getPiezas() {
     });
 }
 
-export function getProyectos() {
+export function getProyectos(callback) {
     $.ajax({
         url: 'assets/js/partes/select_proyecto.php',
         method: 'GET',
         dataType: 'json',
         success: function(data) {
-            const select = $('#select-proyectos');
+            const select = $('#select_proyecto');
             select.empty(); // Limpia opciones anteriores
-            select.append('<option value="">Selecciona un proyecto</option>');
+            select.append('<option value="" disabled selected>Selecciona un proyecto</option>');
 
             data.forEach(function(proyecto) {
                 select.append(
@@ -149,6 +226,9 @@ export function getProyectos() {
                     })
                 );
             });
+
+            // Llamamos al callback después de cargar los proyectos
+            if (callback) callback();
         },
         error: function(xhr, status, error) {
             console.error("Error al obtener los proyectos:", error);
@@ -158,85 +238,23 @@ export function getProyectos() {
 }
 
 
-    
-async function postNuevoProyecto(nombre, descripcion) {
-    const response = await fetch('assets/js/proyectos/proyectos_db.php', {
+async function postNuevaParte(datos) {
+    const response = await fetch('assets/js/partes/partes_db.php', {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            action: 'insert',
-            nombre,
-            descripcion
-        })
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'insert', ...datos })
     });
-    const text = await response.text();
-
-    try {
-        return JSON.parse(text);
-    } catch (e) {
-        console.error("Error al parsear JSON:", e);
-        return { success: false, error: 'Respuesta inválida del servidor' };
-    }
+    return await response.json();
 }
 
-async function postEditarProyecto(id_proyecto, nombre, descripcion) {
-    const response = await fetch('assets/js/proyectos/proyectos_db.php', {
+async function postEditarParte(datos) {
+    const response = await fetch('assets/js/partes/partes_db.php', {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            action: 'update',
-            id_proyecto,
-            nombre,
-            descripcion
-        })
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'update', ...datos })
     });
-
-    const text = await response.text();
-
-    try {
-        return JSON.parse(text);
-    } catch (e) {
-        console.error("Error al parsear JSON:", e);
-        console.warn("Respuesta recibida del servidor:", text); // <-- para debug
-        return { success: false, error: 'Respuesta inválida del servidor' };
-    }
+    return await response.json();
 }
-
-export async function postEditarEstado(id_proyecto, estado) {
-    const response = await fetch('assets/js/proyectos/proyectos_db.php', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            action: 'updateStatus',
-            id_proyecto,
-            estado
-        })
-    });
-
-    const text = await response.text();
-
-    try {
-        const result = JSON.parse(text); // <- primero parseas
-        if (result.success) {
-            toastr.success("Estado actualizado correctamente");
-        } else {
-            toastr.error(result.error || "Error al actualizar estado");
-        }
-        return result; // <- luego retornas
-    } catch (e) {
-        console.error("Error al parsear JSON:", e);
-        console.warn("Respuesta recibida del servidor:", text);
-        toastr.error("Error en la respuesta del servidor");
-        return { success: false, error: 'Respuesta inválida del servidor' };
-    }
-}
-
 
 function formatearFecha(fecha) {
     const f = new Date(fecha);
@@ -249,15 +267,11 @@ function formatearFecha(fecha) {
 }
 
 export function limpiarInputs() {
-    const modal = $('#newProyect');
-    
-    // Limpiar inputs de texto
-    modal.find('input[type="text"], textarea, select').each(function () {
-        $(this).val('');
-    });
-
-    // También podrías quitar clases de validación si estás usando
-    modal.find('.is-valid, .is-invalid').removeClass('is-valid is-invalid');
+    $('#parte').val('');
+    $('#precio').val('');
+    $('#lote').val('');
+    $('#piso').val('');
+    $('#descripcion').val('');
 }
 
 
