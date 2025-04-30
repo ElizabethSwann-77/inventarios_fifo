@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: localhost:3306
--- Tiempo de generación: 30-04-2025 a las 16:08:17
+-- Tiempo de generación: 30-04-2025 a las 21:45:15
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -28,8 +28,8 @@ SET time_zone = "+00:00";
 --
 
 CREATE TABLE `partes` (
-  `numero_parte` varchar(15) NOT NULL,
-  `id_lote` varchar(10) NOT NULL,
+  `numero_parte` varchar(9) NOT NULL,
+  `id_lote` varchar(3) NOT NULL,
   `tipo_parte` varchar(5) NOT NULL,
   `precio` double NOT NULL,
   `piso` int(11) NOT NULL,
