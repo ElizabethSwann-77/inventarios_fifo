@@ -49,13 +49,25 @@ $(document).ready(function() {
     });
 
     $("#btnSaveProyect").click(async function () {
-        const nombre = $("#nombreProyecto").val().trim();
-        const descripcion = $("#descripcionProyecto").val().trim();
+        const nombre = ($("#nombreProyecto").val() || "").trim();
+        const descripcion = ($("#descripcionProyecto").val() || "").trim();
+
+        let allFieldsValid = true;
+
+        // Limpia los posibles estilos anteriores
+        $(".form-control").removeClass("is-invalid");
     
+        // Verifica los campos obligatorios
         if (!nombre) {
+            $("#nombreProyecto").addClass("is-invalid");  // Agrega la clase is-invalid
             toastr.warning('El nombre del proyecto es obligatorio.');
-            return;
+            allFieldsValid = false;  // Cambia el estado de validación
         }
+    
+        // Si hay campos vacíos, no procesamos los datos
+        if (!allFieldsValid) return;
+    
+        
     
         if (UI.modoProyecto === 'insert') {
             const resultado = await postNuevoProyecto(nombre, descripcion);

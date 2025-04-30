@@ -127,7 +127,7 @@ function getColumnasProyectos(){
                 container
                     .css({
                         "text-align": "center",   // ⬅️ Centrado horizontal
-                        "vertical-align": "middle"
+                        "vertical-align": "top"
                     })
                     .text(options.text);
             },

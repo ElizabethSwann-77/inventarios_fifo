@@ -105,7 +105,10 @@ if (!isset($_SESSION['usuario'])) {
                             <label class="form-control-label">Nombre del Proyecto</label>
                             <div class="input-group">
                                 <div class="input-group-addon"><i class="fa fa-project-diagram"></i></div>
-                                <input id="nombreProyecto" class="form-control" placeholder="Ejemplo: Linea Nissan">
+                                <input id="nombreProyecto" class="form-control" placeholder="Ejemplo: Linea Nissan" required>
+                                <div class="invalid-feedback">
+                                    Por favor ingresa el nombre del proyecto.
+                                </div>
                             </div>
                         </div>
                         <div class="form-group">
