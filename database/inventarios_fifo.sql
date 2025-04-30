@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: localhost:3306
--- Tiempo de generación: 26-04-2025 a las 20:36:06
+-- Tiempo de generación: 30-04-2025 a las 16:08:17
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -30,17 +30,13 @@ SET time_zone = "+00:00";
 CREATE TABLE `partes` (
   `numero_parte` varchar(15) NOT NULL,
   `id_lote` varchar(10) NOT NULL,
-  `cantidad` double NOT NULL,
   `tipo_parte` varchar(5) NOT NULL,
-  `estado_parte` varchar(15) NOT NULL,
-  `estatus` varchar(1) NOT NULL,
+  `precio` double NOT NULL,
   `piso` int(11) NOT NULL,
   `id_responsable` int(11) NOT NULL,
   `id_proyecto` int(11) NOT NULL,
   `descripcion` varchar(300) NOT NULL,
-  `prioridad_salida` varchar(1) NOT NULL,
   `fecha_ingreso` datetime NOT NULL,
-  `fecha_caducidad` datetime NOT NULL,
   `fecha_ultima_modificacion` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
