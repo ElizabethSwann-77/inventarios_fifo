@@ -177,7 +177,13 @@ function getColumnasPartes(){
                 container.append(text);
             }
             
-        },        
+        }, 
+        {
+            dataField: "cantidad",
+            headerCellTemplate: function (container) {
+                container.append($("<div style='white-space: normal;'>Cantidad de<br>la pieza</div>"));
+            },
+        },         
         {
             dataField: "responsable",
             caption: "Responsable",

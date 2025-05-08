@@ -18,6 +18,9 @@
             <div id="main-menu" class="main-menu collapse navbar-collapse">
                 <ul class="nav navbar-nav">
                     <h3 class="menu-title">Formularios</h3><!-- /.menu-title -->
+                    <li class="<?= navActive('entradas_salidas.php') ?>">
+                        <a href="entradas_salidas.php">Entradas y Salidas</a>
+                    </li>
                     <li class="<?= navActive('partes.php') ?>">
                         <a href="partes.php">Número de Partes</a>
                     </li>

@@ -21,33 +21,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     switch ($action) {
         case 'insert':
             $numero_parte = $conexion->real_escape_string($input['numero_parte']);
-            $precio = $conexion->real_escape_string($input['precio']);
-            $id_lote = $conexion->real_escape_string($input['id_lote']);
-            $piso = $conexion->real_escape_string($input['piso']);
-            $tipo_parte = $conexion->real_escape_string($input['tipo_parte']);
-            $id_proyecto = $conexion->real_escape_string($input['id_proyecto']);
-            $descripcion = $conexion->real_escape_string($input['descripcion']);
+            $cantidad = $conexion->real_escape_string($input['cantidad']);
+            $observaciones = $conexion->real_escape_string($input['observaciones']);
             $id_responsable = $_SESSION['id_usuario']; // o ajusta según sesión
 
-            $sql = "INSERT INTO partes (numero_parte, id_lote, tipo_parte, precio, piso, id_responsable, id_proyecto, descripcion, fecha_ingreso, fecha_ultima_modificacion)
-                    VALUES ('$numero_parte', '$id_lote', '$tipo_parte','$precio', '$piso', '$id_responsable', '$id_proyecto', '$descripcion', NOW(), NOW())";
+            $sql = "INSERT INTO entradas (numero_parte, cantidad, observaciones, id_registro_entrada, fecha_ingreso, fecha_caducidad, fecha_ultima_modificacion)
+            VALUES ('$numero_parte', '$cantidad', '$observaciones', '$id_responsable', NOW(), DATE_ADD(NOW(), INTERVAL 100 DAY), NOW())";
 
-            if ($conexion->query($sql)) {
+
+            $sql2 = "UPDATE partes 
+                    SET cantidad = cantidad + '$cantidad',
+                        fecha_ultima_modificacion = NOW()
+                    WHERE numero_parte = '$numero_parte'";
+
+    
+            $id_proyecto = obtenerIDProyecto($numero_parte);
+            
+            if ($conexion->query($sql) && $conexion->query($sql2)) {
+                $id_proyecto = obtenerIDProyecto($numero_parte);
+                
                 echo json_encode([
                     'success' => true,
-                    'numero_parte' => $numero_parte,
-                    'lote' => $id_lote,
-                    'piso' => $piso,
-                    'tipo' => $tipo_parte,
-                    'precio' => $precio,
+                    'id_entrada' => $conexion->insert_id,
                     'responsable' => $_SESSION['nombre'],
+                    'tipo' => obtenerTipoParte($numero_parte),
+                    'id_proyecto' => $id_proyecto,
                     'proyecto' => obtenerNombreProyecto($id_proyecto)
                 ]);
-                
                 exit();
             } else {
                 http_response_code(500);
-                echo json_encode(['success' => false, 'error' => 'Error al ejecutar la consulta', 'sql' => $sql]);
+                echo json_encode([
+                    'success' => false,
+                    'error' => 'Error al ejecutar la consulta',
+                    'sql' => $sql,
+                    'sql2' => $sql2
+                ]);
                 exit();
             }
 
@@ -131,6 +140,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 
+function obtenerTipoParte($numero_parte) {
+    global $conexion;
+    $stmt = $conexion->prepare("SELECT tipo_parte FROM partes WHERE numero_parte = ?");
+    $stmt->bind_param("s", $numero_parte);
+    $stmt->execute();
+    $stmt->bind_result($tipo);
+    $stmt->fetch();
+    $stmt->close();
+    return $tipo;
+}
+
+
+function obtenerIDProyecto($numero_parte) {
+    global $conexion;
+    $stmt = $conexion->prepare("SELECT id_proyecto FROM partes WHERE numero_parte = ?");
+    $stmt->bind_param("s", $numero_parte);
+    $stmt->execute();
+    $stmt->bind_result($id_proyecto);
+    $stmt->fetch();
+    $stmt->close();
+    return $id_proyecto;
+}
+
+
 function obtenerNombreProyecto($id_proyecto) {
     global $conexion;
     $stmt = $conexion->prepare("SELECT nombre FROM proyectos WHERE id_proyecto = ?");
@@ -144,19 +177,20 @@ function obtenerNombreProyecto($id_proyecto) {
 
 // 🔍 MODO SELECT (GET)
 $sql = "SELECT 
-            p.numero_parte, 
-            p.id_lote, 
-            p.piso, 
+            e.id_entrada,
+            e.numero_parte, 
+            e.cantidad,  
             p.tipo_parte,
-            p.precio,   
             u.nombre AS responsable, 
             p.id_proyecto,
             pr.nombre AS proyecto, 
             p.descripcion, 
-            p.cantidad,
-            DATE_FORMAT(p.fecha_ingreso, '%d/%m/%Y %H:%i') AS fecha_ingreso, 
-            DATE_FORMAT(p.fecha_ultima_modificacion, '%d/%m/%Y %H:%i') AS fecha_ultima_modificacion
-        FROM partes p 
+            e.observaciones,
+            DATE_FORMAT(e.fecha_ingreso, '%d/%m/%Y %H:%i') AS fecha_ingreso, 
+            DATE_FORMAT(e.fecha_caducidad, '%d/%m/%Y %H:%i') AS fecha_caducidad, 
+            DATE_FORMAT(e.fecha_ultima_modificacion, '%d/%m/%Y %H:%i') AS fecha_ultima_modificacion
+        FROM entradas e
+        INNER JOIN partes p ON p.numero_parte = e.numero_parte
         INNER JOIN usuarios u ON p.id_responsable = u.id_usuario
         INNER JOIN proyectos pr ON pr.id_proyecto = p.id_proyecto";
 

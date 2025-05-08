@@ -133,8 +133,10 @@ $(document).ready(function() {
                     tipo_parte: resultado.tipo ?? 'SMT',
                     precio: resultado.precio ?? 0,
                     responsable: resultado.responsable,
+                    id_proyecto: id_proyecto,
                     proyecto: resultado.proyecto,
                     descripcion: descripcion,
+                    cantidad: 0,
                     fecha_ingreso: formatearFecha(new Date()),
                     fecha_ultima_modificacion: formatearFecha(new Date())
                 };

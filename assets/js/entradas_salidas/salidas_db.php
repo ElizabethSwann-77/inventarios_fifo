@@ -144,19 +144,20 @@ function obtenerNombreProyecto($id_proyecto) {
 
 // 🔍 MODO SELECT (GET)
 $sql = "SELECT 
-            p.numero_parte, 
-            p.id_lote, 
-            p.piso, 
+            e.id_salida,
+            e.numero_parte, 
+            e.cantidad,  
+            e.cantidad_restante,  
             p.tipo_parte,
-            p.precio,   
             u.nombre AS responsable, 
             p.id_proyecto,
             pr.nombre AS proyecto, 
             p.descripcion, 
-            p.cantidad,
-            DATE_FORMAT(p.fecha_ingreso, '%d/%m/%Y %H:%i') AS fecha_ingreso, 
-            DATE_FORMAT(p.fecha_ultima_modificacion, '%d/%m/%Y %H:%i') AS fecha_ultima_modificacion
-        FROM partes p 
+            e.observaciones,
+            DATE_FORMAT(e.fecha_salida, '%d/%m/%Y %H:%i') AS fecha_salida, 
+            DATE_FORMAT(e.fecha_ultima_modificacion, '%d/%m/%Y %H:%i') AS fecha_ultima_modificacion
+        FROM salidas e
+        INNER JOIN partes p ON p.numero_parte = e.numero_parte
         INNER JOIN usuarios u ON p.id_responsable = u.id_usuario
         INNER JOIN proyectos pr ON pr.id_proyecto = p.id_proyecto";
 
