@@ -152,6 +152,52 @@ $(document).ready(function() {
             }
         }        
     });
+
+
+    $("#btnDelete").click(async function () {
+        const numero_parte = ($("#numero_parte_delete").val() || "").trim();
+        const cantidad = ($("#cantidad_delete").val() || "").trim();
+
+        const datos = {
+            id_entrada: UI.idEntradaEditando,
+            cantidad,
+            numero_parte
+        };
+
+        if (UI.modoEntrada === 'delete') {
+            const resultado = await postEliminarEntrada(datos);
+
+            if (resultado.success) {
+                const grid = $("#gridEntradas").dxDataGrid("instance");
+                const dataSource = grid.option("dataSource");
+
+                // Buscar y eliminar el registro desde el dataSource
+                const index = dataSource.findIndex(item => item.id_entrada === UI.idEntradaEditando);
+                if (index !== -1) {
+                    dataSource.splice(index, 1); // eliminar del array
+                }
+
+                // Refrescar la vista del grid
+                grid.refresh();
+
+                $('#Delete').modal('hide');
+                toastr.success('Entrada eliminada exitosamente.');
+            } else {
+                toastr.error('No se pudo eliminar la entrada.');
+            }
+        }
+    });
+
+    $('#select_entrada').on('change', function () {
+        const selectedOption = $(this).find('option:selected');
+        const numeroParte = selectedOption.data('numero-parte');
+        const tipoParte = selectedOption.data('tipo-parte');
+
+        $('#numero_parte').val(numeroParte);
+        $('#tipo_parte').val(tipoParte);
+    });
+
+
     
     
 
@@ -207,7 +253,6 @@ export function getNumerosParte(callback) {
     });
 }
 
-
 async function postNuevaEntrada(datos) {
     const response = await fetch('assets/js/entradas_salidas/entradas_db.php', {
         method: 'POST',
@@ -222,6 +267,15 @@ async function postEditarEntrada(datos) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action: 'update', ...datos })
+    });
+    return await response.json();
+}
+
+async function postEliminarEntrada(datos) {
+    const response = await fetch('assets/js/entradas_salidas/entradas_db.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'delete', ...datos })
     });
     return await response.json();
 }
@@ -259,6 +313,43 @@ function getSalidas() {
             toastr.error("No se pudo cargar la lista de números de parte.");
         }
     });
+}
+
+export function getEntradasSelect(callback) {
+    $.ajax({
+        url: 'assets/js/entradas_salidas/entradas_db.php',
+        method: 'GET',
+        dataType: 'json',
+        success: function(data) {
+            const select = $('#select_entrada');
+            select.empty(); // Limpia opciones anteriores
+            select.append('<option value="" disabled selected>Selecciona un número de entrada</option>');
+
+            data.forEach(function(parte) {
+                select.append(
+                    $('<option>', {
+                        value: parte.id_entrada,
+                        text: parte.id_entrada,
+                        'data-numero-parte': parte.numero_parte,
+                        'data-tipo-parte': parte.tipo_parte
+                    })
+                );
+            });
+
+
+            // Llamamos al callback después de cargar los numeros de parte
+            if (callback) callback();
+        },
+        error: function(xhr, status, error) {
+            console.error("Error al obtener los números de parte:", error);
+            toastr.error("No se pudo cargar la lista de números de parte.");
+        }
+    });
+}
+
+export function limpiarInputsSalida() {
+    $('#cantidad_salida').val('');
+    $('#observaciones_salida').val('');
 }
 
 

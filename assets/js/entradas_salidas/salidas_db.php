@@ -146,8 +146,7 @@ function obtenerNombreProyecto($id_proyecto) {
 $sql = "SELECT 
             e.id_salida,
             e.numero_parte, 
-            e.cantidad,  
-            e.cantidad_restante,  
+            e.cantidad,   
             p.tipo_parte,
             u.nombre AS responsable, 
             p.id_proyecto,

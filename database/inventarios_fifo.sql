@@ -84,7 +84,6 @@ CREATE TABLE `salidas` (
   `id_salida` int(11) NOT NULL,
   `numero_parte` varchar(9) NOT NULL,
   `cantidad` double NOT NULL,
-  `cantidad_restante` double NOT NULL,
   `observaciones` varchar(300) DEFAULT NULL,
   `fecha_salida` datetime NOT NULL,
   `fecha_ultima_modificacion` datetime NOT NULL

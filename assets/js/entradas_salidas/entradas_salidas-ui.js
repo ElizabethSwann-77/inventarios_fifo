@@ -231,6 +231,48 @@ function getColumnasEntradas(){
             minWidth: 135,
         },
         {
+            caption: "Eliminar",
+            width: 70,
+            minWidth: 70,
+            alignment: "center",
+            fixed: true,
+            fixedPosition: "right",
+            allowEditing: false,
+            cellTemplate: function (container, options) {
+                $("<div>")
+                    .addClass("text-danger custom-button-container")
+                    .append(
+                        $("<i>")
+                            .addClass("fas fa-ban custom-icon")
+                            .css("cursor", "pointer")
+                            .attr("title", "Eliminar Registro")
+                            .on("click", function () {
+                                const data = options.data;
+                                modoEntrada = 'delete';
+                                idEntradaEditando = data.id_entrada;
+
+                                // Ajustar encabezado, cuerpo y botón
+                                $("#DeleteLabel").text("Eliminar Entrada Número: " + data.id_entrada);
+                                $("#modalBodyDelete .mensaje-confirmacion").html(`
+                                    <label>¿Estás seguro que deseas eliminar la entrada número <strong>${data.id_entrada}</strong>?</label>
+                                    <label>Al hacerlo, se eliminarán <strong>${data.cantidad}</strong> unidades del total de piezas registradas.</label>
+                                `);
+
+                                $("#btnDelete").text("Eliminar");
+
+                                $("#numero_parte_delete").val(data.numero_parte);
+                                $("#cantidad_delete").val(data.cantidad);
+
+                                $('#Delete').modal('show');
+                            })    
+                    )
+                    .appendTo(container);
+            }
+
+            
+        },
+        /*
+        {
             caption: "Editar",
             width: 70,
             minWidth: 70,
@@ -273,8 +315,8 @@ function getColumnasEntradas(){
                     .appendTo(container);
             }
             
-
         },
+        */
 
     ];
 
@@ -355,13 +397,13 @@ export function getSalidas(dataSource) {
                         class: "btn-custom-resaltado icon-button-wrapper"
                     },
                     onClick: function(e) {
-                        modoParte = 'insert';
-                        idParteEditando = null;
-                        CORE.limpiarInputs();
-                        CORE.getProyectos();
-                        $("#PartsLabel").text("Nuevo Registro de Número de Parte");
-                        $("#btnSaveParts").text("Guardar");
-                        $('#Parts').modal('show');
+                        modoSalida = 'insert';
+                        idSalidaEditando = null;
+                        CORE.limpiarInputsSalida();
+                        CORE.getEntradasSelect();
+                        $("#SalidasLabel").text("Nuevo Registro de Salida");
+                        $("#btnSaveSalidas").text("Guardar");
+                        $('#Salidas').modal('show');
                     }
                     
                 }

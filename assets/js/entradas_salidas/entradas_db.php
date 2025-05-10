@@ -19,48 +19,47 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     switch ($action) {
-        case 'insert':
-            $numero_parte = $conexion->real_escape_string($input['numero_parte']);
-            $cantidad = $conexion->real_escape_string($input['cantidad']);
-            $observaciones = $conexion->real_escape_string($input['observaciones']);
-            $id_responsable = $_SESSION['id_usuario']; // o ajusta según sesión
+            case 'insert':
+                $numero_parte = $conexion->real_escape_string($input['numero_parte']);
+                $cantidad = $conexion->real_escape_string($input['cantidad']);
+                $observaciones = $conexion->real_escape_string($input['observaciones']);
+                $id_responsable = $_SESSION['id_usuario']; // o ajusta según sesión
 
-            $sql = "INSERT INTO entradas (numero_parte, cantidad, observaciones, id_registro_entrada, fecha_ingreso, fecha_caducidad, fecha_ultima_modificacion)
-            VALUES ('$numero_parte', '$cantidad', '$observaciones', '$id_responsable', NOW(), DATE_ADD(NOW(), INTERVAL 100 DAY), NOW())";
+                $sql = "INSERT INTO entradas (numero_parte, cantidad, observaciones, id_registro_entrada, fecha_ingreso, fecha_caducidad, fecha_ultima_modificacion)
+                        VALUES ('$numero_parte', '$cantidad', '$observaciones', '$id_responsable', NOW(), DATE_ADD(NOW(), INTERVAL 100 DAY), NOW())";
 
+                if ($conexion->query($sql)) {
+                    $id_insertado = $conexion->insert_id; // ✅ obtener inmediatamente después del INSERT
 
-            $sql2 = "UPDATE partes 
-                    SET cantidad = cantidad + '$cantidad',
-                        fecha_ultima_modificacion = NOW()
-                    WHERE numero_parte = '$numero_parte'";
+                    $sql2 = "UPDATE partes 
+                            SET cantidad = cantidad + '$cantidad',
+                                fecha_ultima_modificacion = NOW()
+                            WHERE numero_parte = '$numero_parte'";
+                    
+                    $conexion->query($sql2); // ✅ ejecutar después de capturar insert_id
 
-    
-            $id_proyecto = obtenerIDProyecto($numero_parte);
-            
-            if ($conexion->query($sql) && $conexion->query($sql2)) {
-                $id_proyecto = obtenerIDProyecto($numero_parte);
-                
-                echo json_encode([
-                    'success' => true,
-                    'id_entrada' => $conexion->insert_id,
-                    'responsable' => $_SESSION['nombre'],
-                    'tipo' => obtenerTipoParte($numero_parte),
-                    'id_proyecto' => $id_proyecto,
-                    'proyecto' => obtenerNombreProyecto($id_proyecto)
-                ]);
-                exit();
-            } else {
-                http_response_code(500);
-                echo json_encode([
-                    'success' => false,
-                    'error' => 'Error al ejecutar la consulta',
-                    'sql' => $sql,
-                    'sql2' => $sql2
-                ]);
-                exit();
-            }
+                    $id_proyecto = obtenerIDProyecto($numero_parte);
 
+                    echo json_encode([
+                        'success' => true,
+                        'id_entrada' => $id_insertado,
+                        'responsable' => $_SESSION['nombre'],
+                        'tipo' => obtenerTipoParte($numero_parte),
+                        'id_proyecto' => $id_proyecto,
+                        'proyecto' => obtenerNombreProyecto($id_proyecto)
+                    ]);
+                    exit();
+                } else {
+                    http_response_code(500);
+                    echo json_encode([
+                        'success' => false,
+                        'error' => 'Error al ejecutar la consulta',
+                        'sql' => $sql
+                    ]);
+                    exit();
+                }
             break;
+
             
             case 'update':
                 $numero_parte = $conexion->real_escape_string($input['numero_parte']);
@@ -114,13 +113,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         "sql" => $sql
                     ]);
                 }
-                break;
+            break;
             
 
         case 'delete':
-            $id = intval($input['id_proyecto']);
-            $sql = "DELETE FROM proyectos WHERE id_proyecto = $id";
-            break;
+            $id = intval($input['id_entrada']);
+            $numero_parte = $conexion->real_escape_string($input['numero_parte']);
+            $cantidad = $conexion->real_escape_string($input['cantidad']);
+
+            $sql = "DELETE FROM entradas WHERE id_entrada = $id";
+
+            $sql2 = "UPDATE partes 
+                     SET cantidad = cantidad - $cantidad,
+                        fecha_ultima_modificacion = NOW()
+                     WHERE numero_parte = '$numero_parte'";
+
+            if ($conexion->query($sql) && $conexion->query($sql2)) {
+                    echo json_encode(["success" => true]);
+                    exit();
+                } else {
+                    echo json_encode([
+                        "success" => false,
+                        "error" => "Error en la consulta: " . $conexion->error,
+                        "sql1" => $sql,
+                        "sql2" => $sql2,
+                        "datos_recibidos" => $input
+                    ]);
+                }
+
+        break;
 
         default:
             http_response_code(400);

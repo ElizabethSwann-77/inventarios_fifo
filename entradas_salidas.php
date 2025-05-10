@@ -123,7 +123,7 @@ if (!isset($_SESSION['usuario'])) {
                             <div class="form-group col-md-6">
                                 <label class="form-control-label">Número de Parte</label>
                                 <div class="input-group">
-                                    <div class="input-group-addon"><i class="fa fa-microchip"></i></div>
+                                    <div class="input-group-addon"><i class="fa fa-barcode"></i></div>
                                     <select class="form-control" id="select_partes_entrada">
                                     </select>
                                     <div class="invalid-feedback">
@@ -154,6 +154,95 @@ if (!isset($_SESSION['usuario'])) {
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
                     <button type="button" class="btn btn-primary" id="btnSaveEntrada"></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+        <div class="modal fade" id="Salidas" tabindex="-1" aria-labelledby="SalidasLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="SalidasLabel"></h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true" style="color:white;">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" id="modalBodySalidas">
+                    <form action="" method="post" enctype="multipart/form-data" class="form-horizontal">
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label class="form-control-label">Número de Entrada</label>
+                                <div class="input-group">
+                                    <div class="input-group-addon"><i class="fa fa-hashtag"></i></div>
+                                    <select class="form-control" id="select_entrada">
+                                    </select>
+                                    <div class="invalid-feedback">
+                                        Por favor selecciona un número de entrada.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label class="form-control-label">Cantidad de Piezas</label>
+                                <div class="input-group">
+                                    <div class="input-group-addon"><i class="fa fa-hashtag"></i></div>
+                                    <input type="number" class="form-control" placeholder="Ejemplo: 100" id="cantidad_salida" required>
+                                    <div class="invalid-feedback">
+                                        Por favor ingresa la cantidad de piezas.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label class="form-control-label">Número de Parte</label>
+                                <div class="input-group">
+                                    <div class="input-group-addon"><i class="fa fa-barcode"></i></div>
+                                    <input class="form-control" id="numero_parte" disabled></input>
+                                </div>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label class="form-control-label">Tipo de Parte</label>
+                                <div class="input-group">
+                                    <div class="input-group-addon"><i class="fa fa-microchip"></i></div>
+                                    <input class="form-control" id="tipo_parte" disabled>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-control-label">Observaciones de la Salida</label>
+                            <div class="input-group">
+                                <div class="input-group-addon"><i class="fa fa-keyboard"></i></div>
+                                <textarea id="observaciones_salida" class="form-control" rows="4" placeholder="Observaciones (opcional)"></textarea>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-primary" id="btnSaveSalidas"></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="Delete" tabindex="-1" aria-labelledby="DeleteLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="DeleteLabel"></h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true" style="color:white;">&times;</span>
+                    </button>
+                </div>
+               <div class="modal-body" id="modalBodyDelete">
+                    <div class="mensaje-confirmacion"></div>
+                    <input type="hidden" id="numero_parte_delete">
+                    <input type="hidden" id="cantidad_delete">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-primary" id="btnDelete"></button>
                 </div>
             </div>
         </div>
