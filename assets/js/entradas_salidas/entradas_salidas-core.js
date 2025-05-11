@@ -3,6 +3,9 @@ import * as UI from './entradas_salidas-ui.js';
 // Desactivar el conflicto con otras librerías
 var $ = jQuery.noConflict();
 
+let cantidadMaxima = 0;
+
+
 // Ahora puedes usar "$" para referirte a jQuery
 $(document).ready(function() {
     toastr.options = {
@@ -30,29 +33,42 @@ $(document).ready(function() {
     };
 
     initialize();
-
-    $('#cantidad_entrada').on('input', function () {
-        const valor = $(this).val();
     
-        // Verifica si hay un punto decimal
-        if (valor.includes('.')) {
-            const [entero, decimal] = valor.split('.');
-    
-            // Si hay más de 3 decimales, los recorta
-            if (decimal.length > 3) {
-                $(this).val(`${entero}.${decimal.substring(0, 3)}`);
-                toastr.warning("Solo se permiten hasta 3 decimales en el precio.");
-            }
-        }
-    });
-    
-    $('#observaciones_entrada').on('input', function () {
+    $('#observaciones_entrada, #observaciones_salida').on('input', function () {
         const valor = $(this).val().trim();
         if (valor.length >= 301) {
-            $(this).val(valor.substring(0, 300));  // Limitar a  300 caracteres
-            toastr.warning("La observacion de la entrada no puede ser mayor a 300 caracteres");
+            $(this).val(valor.substring(0, 300));
+            toastr.warning("La observación no puede ser mayor a 300 caracteres");
         }
     });
+
+    let cantidadMaxima = 0;
+
+    $('#select_partes_salida').on('change', function () {
+        const selected = $(this).find(':selected');
+        const cantidad = parseInt(selected.data('cantidad')) || 0;
+    
+        cantidadMaxima = cantidad;
+    
+        if (selected.val()) {
+            $('#cantidad_salida')
+                .prop('disabled', false)
+                .attr('max', cantidadMaxima); // opcional para navegadores modernos
+        } else {
+            $('#cantidad_salida').prop('disabled', true).val('');
+        }
+    });
+    
+    // Validar cantidad en tiempo real
+    $('#cantidad_salida').on('input', function () {
+        const valor = parseInt($(this).val()) || 0;
+    
+        if (valor > cantidadMaxima) {
+            $(this).val(cantidadMaxima); // Limita al máximo
+            toastr.warning(`No puedes solicitar más de ${cantidadMaxima} piezas para este número de parte.`);
+        }
+    });
+    
 
     $("#btnSaveEntrada").click(async function () {
         const numero_parte = ($("#select_partes_entrada").val() || "").trim();
@@ -114,7 +130,7 @@ $(document).ready(function() {
                 dataSource.push(nuevaEntrada);
                 grid.refresh();
     
-                limpiarInputsEntrada();
+                limpiarInputs();
                 $('#Entradas').modal('hide');
                 toastr.success('Entrada de material registrada exitosamente.');
             } else {
@@ -144,7 +160,7 @@ $(document).ready(function() {
                 }
         
                 grid.refresh();
-                limpiarInputsEntrada();
+                limpiarInputs();
                 $('#Entradas').modal('hide');
                 toastr.success('Entrada de material actualizada correctamente.');
             } else {
@@ -160,6 +176,12 @@ $(document).ready(function() {
 
         const datos = {
             id_entrada: UI.idEntradaEditando,
+            cantidad,
+            numero_parte
+        };
+
+        const datos2 = {
+            id_salida: UI.idSalidaEditando,
             cantidad,
             numero_parte
         };
@@ -185,16 +207,95 @@ $(document).ready(function() {
             } else {
                 toastr.error('No se pudo eliminar la entrada.');
             }
+        } else if (UI.modoSalida === 'delete') {
+            const resultado = await postEliminarSalida(datos2);
+
+            if (resultado.success) {
+                const grid = $("#gridSalidas").dxDataGrid("instance");
+                const dataSource = grid.option("dataSource");
+
+                // Buscar y eliminar el registro desde el dataSource
+                const index = dataSource.findIndex(item => item.id_salida === UI.idSalidaEditando);
+                if (index !== -1) {
+                    dataSource.splice(index, 1); // eliminar del array
+                }
+
+                // Refrescar la vista del grid
+                grid.refresh();
+
+                $('#Delete').modal('hide');
+                toastr.success('Salida eliminada exitosamente.');
+            } else {
+                toastr.error('No se pudo eliminar la salida.');
+            }
         }
     });
 
-    $('#select_entrada').on('change', function () {
-        const selectedOption = $(this).find('option:selected');
-        const numeroParte = selectedOption.data('numero-parte');
-        const tipoParte = selectedOption.data('tipo-parte');
+    $("#btnSaveSalidas").click(async function () {
+        const numero_parte = ($("#select_partes_salida").val() || "").trim();
+        const cantidad = ($("#cantidad_salida").val() || "").trim();
+        const observaciones = ($("#observaciones_salida").val() || "").trim();
+        
+        let allFieldsValid = true;
+    
+        // Limpia los posibles estilos anteriores
+        $(".form-control").removeClass("is-invalid");
+    
+        // Verifica los campos obligatorios
+        if (!numero_parte || !cantidad) {
+            if (!numero_parte) {
+                $("#select_partes_salida").addClass("is-invalid");
+            }
+            if (!cantidad) {
+                $("#cantidad_salida").addClass("is-invalid");
+            }
+           
+            toastr.warning('Todos los campos obligatorios deben estar llenos.');
+            allFieldsValid = false;
+        }
+    
+        // Si hay campos vacíos, no procesamos los datos
+        if (!allFieldsValid) return;
+    
+        const datos = {
+            numero_parte,
+            cantidad,
+            observaciones
+        };
+    
+        if (UI.modoSalida === 'insert') {
+            const resultado = await postNuevaSalida(datos);
+            console.log(resultado)
+            if (resultado.success) {
+                
+                const grid = $("#gridSalidas").dxDataGrid("instance");
+                const dataSource = grid.option("dataSource");
 
-        $('#numero_parte').val(numeroParte);
-        $('#tipo_parte').val(tipoParte);
+                const hoy = new Date();
+    
+                const nuevaSalida = {
+                    id_salida: resultado.id_salida ?? 0,
+                    numero_parte: numero_parte ?? 0,
+                    tipo_parte: resultado.tipo,
+                    cantidad: cantidad ?? 0,
+                    observaciones: observaciones ?? '',
+                    responsable: resultado.responsable,
+                    id_proyecto: resultado.id_proyecto ?? 0,
+                    proyecto: resultado.proyecto,
+                    fecha_salida: formatearFecha(hoy),
+                    fecha_ultima_modificacion: formatearFecha(hoy)
+                };
+    
+                dataSource.push(nuevaSalida);
+                grid.refresh();
+    
+                limpiarInputs();
+                $('#Salidas').modal('hide');
+                toastr.success('Salida de material registrada exitosamente.');
+            } else {
+                toastr.error('No se pudo registrar el proyecto.');
+            }
+        }         
     });
 
 
@@ -262,15 +363,6 @@ async function postNuevaEntrada(datos) {
     return await response.json();
 }
 
-async function postEditarEntrada(datos) {
-    const response = await fetch('assets/js/entradas_salidas/entradas_db.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'update', ...datos })
-    });
-    return await response.json();
-}
-
 async function postEliminarEntrada(datos) {
     const response = await fetch('assets/js/entradas_salidas/entradas_db.php', {
         method: 'POST',
@@ -278,21 +370,6 @@ async function postEliminarEntrada(datos) {
         body: JSON.stringify({ action: 'delete', ...datos })
     });
     return await response.json();
-}
-
-function formatearFecha(fecha) {
-    const f = new Date(fecha);
-    const dia = String(f.getDate()).padStart(2, '0');
-    const mes = String(f.getMonth() + 1).padStart(2, '0');
-    const anio = f.getFullYear();
-    const horas = String(f.getHours()).padStart(2, '0');
-    const minutos = String(f.getMinutes()).padStart(2, '0');
-    return `${dia}/${mes}/${anio} ${horas}:${minutos}`;
-}
-
-export function limpiarInputsEntrada() {
-    $('#cantidad_entrada').val('');
-    $('#observaciones_entrada').val('');
 }
 
 /*--------------------------------------------------------------------------------------------------*/
@@ -315,27 +392,25 @@ function getSalidas() {
     });
 }
 
-export function getEntradasSelect(callback) {
+export function getNumerosParteSalidas(callback) {
     $.ajax({
-        url: 'assets/js/entradas_salidas/entradas_db.php',
+        url: 'assets/js/entradas_salidas/partes_db.php',
         method: 'GET',
         dataType: 'json',
         success: function(data) {
-            const select = $('#select_entrada');
+            const select = $('#select_partes_salida');
             select.empty(); // Limpia opciones anteriores
-            select.append('<option value="" disabled selected>Selecciona un número de entrada</option>');
+            select.append('<option value="" disabled selected>Selecciona un número de parte</option>');
 
             data.forEach(function(parte) {
                 select.append(
                     $('<option>', {
-                        value: parte.id_entrada,
-                        text: parte.id_entrada,
-                        'data-numero-parte': parte.numero_parte,
-                        'data-tipo-parte': parte.tipo_parte
+                        value: parte.numero_parte,
+                        text: parte.numero_parte,
+                        'data-cantidad': parte.cantidad  // Guarda la cantidad disponible
                     })
                 );
             });
-
 
             // Llamamos al callback después de cargar los numeros de parte
             if (callback) callback();
@@ -347,11 +422,39 @@ export function getEntradasSelect(callback) {
     });
 }
 
-export function limpiarInputsSalida() {
-    $('#cantidad_salida').val('');
-    $('#observaciones_salida').val('');
+async function postNuevaSalida(datos) {
+    const response = await fetch('assets/js/entradas_salidas/salidas_db.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'insert', ...datos })
+    });
+    return await response.json();
 }
 
+async function postEliminarSalida(datos) {
+    const response = await fetch('assets/js/entradas_salidas/salidas_db.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'delete', ...datos })
+    });
+    return await response.json();
+}
 
 /*--------------------------------------------------------------------------------------------------*/
 
+function formatearFecha(fecha) {
+    const f = new Date(fecha);
+    const dia = String(f.getDate()).padStart(2, '0');
+    const mes = String(f.getMonth() + 1).padStart(2, '0');
+    const anio = f.getFullYear();
+    const horas = String(f.getHours()).padStart(2, '0');
+    const minutos = String(f.getMinutes()).padStart(2, '0');
+    return `${dia}/${mes}/${anio} ${horas}:${minutos}`;
+}
+
+export function limpiarInputs() {
+    $('#cantidad_entrada').val('');
+    $('#observaciones_entrada').val('');
+    $('#cantidad_salida').val('').prop('disabled', true);  // Limpiar y deshabilitar
+    $('#observaciones_salida').val('');
+}

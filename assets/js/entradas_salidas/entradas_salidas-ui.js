@@ -40,7 +40,7 @@ export function getEntradas(dataSource) {
         columnResizingMode: 'widget',
         "export": {
             enabled: true,
-            fileName: "Partes",
+            fileName: "Entradas",
             excelFilterEnabled: true,
             excelWrapTextEnabled: true
         },
@@ -102,7 +102,7 @@ export function getEntradas(dataSource) {
                     onClick: function(e) {
                         modoEntrada = 'insert';
                         idEntradaEditando = null;
-                        CORE.limpiarInputsEntrada();
+                        CORE.limpiarInputs();
                         CORE.getNumerosParte();
                         $("#EntradasLabel").text("Nuevo Registro de Entrada");
                         $("#btnSaveEntrada").text("Guardar");
@@ -221,16 +221,6 @@ function getColumnasEntradas(){
             minWidth: 135,
         },
         {
-            dataField: "fecha_ultima_modificacion",
-            headerCellTemplate: function (container) {
-                container.append($("<div style='white-space: normal;'>Fecha Ultima<br>Modificación</div>"));
-            },
-            allowEditing: false,
-            dataType: "string",
-            width: 135,
-            minWidth: 135,
-        },
-        {
             caption: "Eliminar",
             width: 70,
             minWidth: 70,
@@ -270,54 +260,7 @@ function getColumnasEntradas(){
             }
 
             
-        },
-        /*
-        {
-            caption: "Editar",
-            width: 70,
-            minWidth: 70,
-            alignment: "center",
-            fixed: true,
-            fixedPosition: "right",
-            allowEditing: false,
-            cellTemplate: function (container, options) {
-                $("<div>")
-                    .addClass("text-primary custom-button-container")
-                    .append(
-                        $("<i>")
-                            .addClass("fas fa-edit custom-icon")
-                            .css("cursor", "pointer")
-                            .attr("title", "Editar Registro")
-                            .on("click", function () {
-                                // Llama a getProyectos y actualiza el select
-                                CORE.getProyectos(function() {
-                                    const data = options.data;
-                                    modoParte = 'edit';
-                                    idParteEditando = data.numero_parte;
-                            
-                                    // Cargar los datos en el modal
-                                    $("#parte").val(data.numero_parte);
-                                    $("#precio").val(data.precio);
-                                    $("#lote").val(data.id_lote);
-                                    $("#piso").val(data.piso);
-                                    $("#select_tipo").val(data.tipo_parte);
-                                    $("#select_proyecto").val(data.id_proyecto);
-                                    $("#descripcion").val(data.descripcion);
-                            
-                                    // Ajustar encabezado y botón
-                                    $("#PartsLabel").text("Editar Número de Parte");
-                                    $("#btnSaveParts").text("Actualizar");
-                            
-                                    $('#Parts').modal('show');
-                                });
-                            })    
-                    )
-                    .appendTo(container);
-            }
-            
-        },
-        */
-
+        }
     ];
 
     return dataFields;
@@ -337,7 +280,7 @@ export function getSalidas(dataSource) {
         columnResizingMode: 'widget',
         "export": {
             enabled: true,
-            fileName: "Partes",
+            fileName: "Salidas",
             excelFilterEnabled: true,
             excelWrapTextEnabled: true
         },
@@ -399,8 +342,8 @@ export function getSalidas(dataSource) {
                     onClick: function(e) {
                         modoSalida = 'insert';
                         idSalidaEditando = null;
-                        CORE.limpiarInputsSalida();
-                        CORE.getEntradasSelect();
+                        CORE.limpiarInputs();
+                        CORE.getNumerosParteSalidas();
                         $("#SalidasLabel").text("Nuevo Registro de Salida");
                         $("#btnSaveSalidas").text("Guardar");
                         $('#Salidas').modal('show');
@@ -450,21 +393,7 @@ function getColumnasSalidas(){
             headerCellTemplate: function (container) {
                 container.append($("<div style='white-space: normal;'>Cantidad de<br>la salida</div>"));
             },
-            cellTemplate: function (container, options) {
-                let valor = parseFloat(options.value);
-                
-                // Verificamos que sea un número válido
-                let valorFormateado = isNaN(valor) ? '' : `$ ${valor.toString().replace(/\.?0+$/, "")}`;
-            
-                const text = $("<div>").text(valorFormateado).css({
-                    whiteSpace: "normal",
-                    wordWrap: "break-word",
-                    overflow: "hidden",
-                    textOverflow: "ellipsis"
-                });
-            
-                container.append(text);
-            }
+        
         },   
         {
             dataField: "observaciones",
@@ -523,17 +452,7 @@ function getColumnasSalidas(){
             minWidth: 135,
         },
         {
-            dataField: "fecha_ultima_modificacion",
-            headerCellTemplate: function (container) {
-                container.append($("<div style='white-space: normal;'>Fecha Ultima<br>Modificación</div>"));
-            },
-            allowEditing: false,
-            dataType: "string",
-            width: 135,
-            minWidth: 135,
-        },
-        {
-            caption: "Editar",
+            caption: "Eliminar",
             width: 70,
             minWidth: 70,
             alignment: "center",
@@ -542,41 +461,37 @@ function getColumnasSalidas(){
             allowEditing: false,
             cellTemplate: function (container, options) {
                 $("<div>")
-                    .addClass("text-primary custom-button-container")
+                    .addClass("text-danger custom-button-container")
                     .append(
                         $("<i>")
-                            .addClass("fas fa-edit custom-icon")
+                            .addClass("fas fa-ban custom-icon")
                             .css("cursor", "pointer")
-                            .attr("title", "Editar Registro")
+                            .attr("title", "Eliminar Registro")
                             .on("click", function () {
-                                // Llama a getProyectos y actualiza el select
-                                CORE.getProyectos(function() {
-                                    const data = options.data;
-                                    modoParte = 'edit';
-                                    idParteEditando = data.numero_parte;
-                            
-                                    // Cargar los datos en el modal
-                                    $("#parte").val(data.numero_parte);
-                                    $("#precio").val(data.precio);
-                                    $("#lote").val(data.id_lote);
-                                    $("#piso").val(data.piso);
-                                    $("#select_tipo").val(data.tipo_parte);
-                                    $("#select_proyecto").val(data.id_proyecto);
-                                    $("#descripcion").val(data.descripcion);
-                            
-                                    // Ajustar encabezado y botón
-                                    $("#PartsLabel").text("Editar Número de Parte");
-                                    $("#btnSaveParts").text("Actualizar");
-                            
-                                    $('#Parts').modal('show');
-                                });
+                                const data = options.data;
+                                modoSalida = 'delete';
+                                idSalidaEditando = data.id_salida;
+
+                                // Ajustar encabezado, cuerpo y botón
+                                $("#DeleteLabel").text("Eliminar Salida Número: " + data.id_salida);
+                                $("#modalBodyDelete .mensaje-confirmacion").html(`
+                                    <label>¿Estás seguro que deseas eliminar la salida número <strong>${data.id_salida}</strong>?</label>
+                                    <label>Al hacerlo, se eliminarán <strong>${data.cantidad}</strong> unidades del total de piezas registradas.</label>
+                                `);
+
+                                $("#btnDelete").text("Eliminar");
+                                $("#numero_parte_delete").val(data.numero_parte);
+                                $("#cantidad_delete").val(data.cantidad);
+
+                                $('#Delete').modal('show');
                             })    
                     )
                     .appendTo(container);
             }
-            
 
+            
         },
+    
 
     ];
 

@@ -9,7 +9,8 @@ if (!isset($_SESSION['usuario'])) {
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inventarios_fifo/config/conexion.php';
 
 $sql = "SELECT 
-            p.numero_parte
+            p.numero_parte,
+            p.cantidad
         FROM partes p 
         INNER JOIN usuarios u ON p.id_responsable = u.id_usuario";
 

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 08-05-2025 a las 21:00:04
+-- Tiempo de generación: 12-05-2025 a las 01:38:09
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -30,12 +30,11 @@ SET time_zone = "+00:00";
 CREATE TABLE `entradas` (
   `id_entrada` int(11) NOT NULL,
   `numero_parte` varchar(9) NOT NULL,
-  `cantidad` double NOT NULL,
+  `cantidad` int(11) NOT NULL,
   `observaciones` varchar(300) DEFAULT NULL,
   `id_registro_entrada` int(11) NOT NULL,
   `fecha_ingreso` datetime NOT NULL,
-  `fecha_caducidad` datetime NOT NULL,
-  `fecha_ultima_modificacion` datetime NOT NULL
+  `fecha_caducidad` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -83,10 +82,10 @@ CREATE TABLE `proyectos` (
 CREATE TABLE `salidas` (
   `id_salida` int(11) NOT NULL,
   `numero_parte` varchar(9) NOT NULL,
-  `cantidad` double NOT NULL,
+  `cantidad` int(11) NOT NULL,
   `observaciones` varchar(300) DEFAULT NULL,
-  `fecha_salida` datetime NOT NULL,
-  `fecha_ultima_modificacion` datetime NOT NULL
+  `id_registro_salida` int(11) NOT NULL,
+  `fecha_salida` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------

@@ -137,6 +137,7 @@ if (!isset($_SESSION['usuario'])) {
 <script src="vendors/popper.js/dist/umd/popper.min.js"></script>
 <script src="vendors/bootstrap/dist/js/bootstrap.min.js"></script>
 <script src="vendors/toastr/toastr.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script src="https://cdn3.devexpress.com/jslib/20.1.6/js/dx.all.js"></script>
 <script src="assets/js/main.js"></script>
 <script type="module" src="assets/js/proyectos/proyectos-core.js"></script>

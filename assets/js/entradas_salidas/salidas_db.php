@@ -21,97 +21,71 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     switch ($action) {
         case 'insert':
             $numero_parte = $conexion->real_escape_string($input['numero_parte']);
-            $precio = $conexion->real_escape_string($input['precio']);
-            $id_lote = $conexion->real_escape_string($input['id_lote']);
-            $piso = $conexion->real_escape_string($input['piso']);
-            $tipo_parte = $conexion->real_escape_string($input['tipo_parte']);
-            $id_proyecto = $conexion->real_escape_string($input['id_proyecto']);
-            $descripcion = $conexion->real_escape_string($input['descripcion']);
+            $cantidad = $conexion->real_escape_string($input['cantidad']);
+            $observaciones = $conexion->real_escape_string($input['observaciones']);
             $id_responsable = $_SESSION['id_usuario']; // o ajusta según sesión
 
-            $sql = "INSERT INTO partes (numero_parte, id_lote, tipo_parte, precio, piso, id_responsable, id_proyecto, descripcion, fecha_ingreso, fecha_ultima_modificacion)
-                    VALUES ('$numero_parte', '$id_lote', '$tipo_parte','$precio', '$piso', '$id_responsable', '$id_proyecto', '$descripcion', NOW(), NOW())";
+            $sql = "INSERT INTO salidas (numero_parte, cantidad, observaciones, id_registro_salida, fecha_salida)
+                    VALUES ('$numero_parte', '$cantidad', '$observaciones', '$id_responsable', NOW())";
 
             if ($conexion->query($sql)) {
+                $id_insertado = $conexion->insert_id; // ✅ obtener inmediatamente después del INSERT
+
+                $sql2 = "UPDATE partes 
+                         SET cantidad = cantidad - '$cantidad',
+                            fecha_ultima_modificacion = NOW()
+                         WHERE numero_parte = '$numero_parte'";
+                
+                $conexion->query($sql2); // ✅ ejecutar después de capturar insert_id
+
+                $id_proyecto = obtenerIDProyecto($numero_parte);
+
                 echo json_encode([
                     'success' => true,
-                    'numero_parte' => $numero_parte,
-                    'lote' => $id_lote,
-                    'piso' => $piso,
-                    'tipo' => $tipo_parte,
-                    'precio' => $precio,
+                    'id_salida' => $id_insertado,
                     'responsable' => $_SESSION['nombre'],
+                    'tipo' => obtenerTipoParte($numero_parte),
+                    'id_proyecto' => $id_proyecto,
                     'proyecto' => obtenerNombreProyecto($id_proyecto)
                 ]);
-                
                 exit();
             } else {
                 http_response_code(500);
-                echo json_encode(['success' => false, 'error' => 'Error al ejecutar la consulta', 'sql' => $sql]);
+                echo json_encode([
+                    'success' => false,
+                    'error' => 'Error al ejecutar la consulta',
+                    'sql' => $sql
+                ]);
                 exit();
             }
+        break;
+                        
+        case 'delete':
+            $id = intval($input['id_salida']);
+            $numero_parte = $conexion->real_escape_string($input['numero_parte']);
+            $cantidad = $conexion->real_escape_string($input['cantidad']);
 
-            break;
-            
-            case 'update':
-                $numero_parte = $conexion->real_escape_string($input['numero_parte']);
-                $precio = $conexion->real_escape_string($input['precio']);
-                $id_lote = $conexion->real_escape_string($input['id_lote']);
-                $piso = $conexion->real_escape_string($input['piso']);
-                $tipo_parte = $conexion->real_escape_string($input['tipo_parte']);
-                $id_proyecto = $conexion->real_escape_string($input['id_proyecto']);
-                $descripcion = $conexion->real_escape_string($input['descripcion']);
-            
-                $sql = "UPDATE partes 
-                        SET numero_parte = '$numero_parte',
-                            id_lote = '$id_lote',
-                            tipo_parte = '$tipo_parte',
-                            precio = '$precio',
-                            piso = '$piso',
-                            id_proyecto = '$id_proyecto',
-                            descripcion = '$descripcion',
-                            fecha_ultima_modificacion = NOW()
-                        WHERE numero_parte = '$numero_parte'";  // Usamos numero_parte en lugar de id_parte
-            
-                if ($conexion->query($sql)) {
-                    echo json_encode([
-                        "success" => true,
-                        "proyecto" => obtenerNombreProyecto($id_proyecto)
-                    ]);
-                    exit();
-                } else {
-                    echo json_encode(["success" => false, "error" => $conexion->error, "sql" => $sql]);
-                    exit();
-                }
-            
-                break;
-            
+            $sql = "DELETE FROM salidas WHERE id_salida = $id";
 
-            case 'updateStatus':
-                $id = intval($input['id_proyecto']);
-                $estado = $conexion->real_escape_string($input['estado']);
-            
-                $sql = "UPDATE proyectos 
-                        SET estado = '$estado', fecha_ultima_modificacion = NOW()
-                        WHERE id_proyecto = $id";
-            
-                if ($conexion->query($sql)) {
+            $sql2 = "UPDATE partes 
+                     SET cantidad = cantidad + $cantidad,
+                        fecha_ultima_modificacion = NOW()
+                     WHERE numero_parte = '$numero_parte'";
+
+            if ($conexion->query($sql) && $conexion->query($sql2)) {
                     echo json_encode(["success" => true]);
                     exit();
                 } else {
                     echo json_encode([
                         "success" => false,
                         "error" => "Error en la consulta: " . $conexion->error,
-                        "sql" => $sql
+                        "sql1" => $sql,
+                        "sql2" => $sql2,
+                        "datos_recibidos" => $input
                     ]);
                 }
-                break;
-            
 
-        case 'delete':
-            $id = intval($input['id_proyecto']);
-            $sql = "DELETE FROM proyectos WHERE id_proyecto = $id";
-            break;
+        break;
 
         default:
             http_response_code(400);
@@ -131,6 +105,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 
+function obtenerTipoParte($numero_parte) {
+    global $conexion;
+    $stmt = $conexion->prepare("SELECT tipo_parte FROM partes WHERE numero_parte = ?");
+    $stmt->bind_param("s", $numero_parte);
+    $stmt->execute();
+    $stmt->bind_result($tipo);
+    $stmt->fetch();
+    $stmt->close();
+    return $tipo;
+}
+
+
+function obtenerIDProyecto($numero_parte) {
+    global $conexion;
+    $stmt = $conexion->prepare("SELECT id_proyecto FROM partes WHERE numero_parte = ?");
+    $stmt->bind_param("s", $numero_parte);
+    $stmt->execute();
+    $stmt->bind_result($id_proyecto);
+    $stmt->fetch();
+    $stmt->close();
+    return $id_proyecto;
+}
+
+
 function obtenerNombreProyecto($id_proyecto) {
     global $conexion;
     $stmt = $conexion->prepare("SELECT nombre FROM proyectos WHERE id_proyecto = ?");
@@ -141,6 +139,7 @@ function obtenerNombreProyecto($id_proyecto) {
     $stmt->close();
     return $nombre;
 }
+
 
 // 🔍 MODO SELECT (GET)
 $sql = "SELECT 
@@ -153,8 +152,7 @@ $sql = "SELECT
             pr.nombre AS proyecto, 
             p.descripcion, 
             e.observaciones,
-            DATE_FORMAT(e.fecha_salida, '%d/%m/%Y %H:%i') AS fecha_salida, 
-            DATE_FORMAT(e.fecha_ultima_modificacion, '%d/%m/%Y %H:%i') AS fecha_ultima_modificacion
+            DATE_FORMAT(e.fecha_salida, '%d/%m/%Y %H:%i') AS fecha_salida
         FROM salidas e
         INNER JOIN partes p ON p.numero_parte = e.numero_parte
         INNER JOIN usuarios u ON p.id_responsable = u.id_usuario

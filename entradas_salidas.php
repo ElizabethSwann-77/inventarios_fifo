@@ -172,13 +172,13 @@ if (!isset($_SESSION['usuario'])) {
                     <form action="" method="post" enctype="multipart/form-data" class="form-horizontal">
                         <div class="form-row">
                             <div class="form-group col-md-6">
-                                <label class="form-control-label">Número de Entrada</label>
+                                <label class="form-control-label">Número de Parte</label>
                                 <div class="input-group">
-                                    <div class="input-group-addon"><i class="fa fa-hashtag"></i></div>
-                                    <select class="form-control" id="select_entrada">
+                                    <div class="input-group-addon"><i class="fa fa-barcode"></i></div>
+                                    <select class="form-control" id="select_partes_salida">
                                     </select>
                                     <div class="invalid-feedback">
-                                        Por favor selecciona un número de entrada.
+                                        Por favor selecciona un número de parte.
                                     </div>
                                 </div>
                             </div>
@@ -186,26 +186,10 @@ if (!isset($_SESSION['usuario'])) {
                                 <label class="form-control-label">Cantidad de Piezas</label>
                                 <div class="input-group">
                                     <div class="input-group-addon"><i class="fa fa-hashtag"></i></div>
-                                    <input type="number" class="form-control" placeholder="Ejemplo: 100" id="cantidad_salida" required>
+                                    <input type="number" class="form-control" placeholder="Ejemplo: 100" id="cantidad_salida" required disabled>
                                     <div class="invalid-feedback">
                                         Por favor ingresa la cantidad de piezas.
                                     </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group col-md-6">
-                                <label class="form-control-label">Número de Parte</label>
-                                <div class="input-group">
-                                    <div class="input-group-addon"><i class="fa fa-barcode"></i></div>
-                                    <input class="form-control" id="numero_parte" disabled></input>
-                                </div>
-                            </div>
-                            <div class="form-group col-md-6">
-                                <label class="form-control-label">Tipo de Parte</label>
-                                <div class="input-group">
-                                    <div class="input-group-addon"><i class="fa fa-microchip"></i></div>
-                                    <input class="form-control" id="tipo_parte" disabled>
                                 </div>
                             </div>
                         </div>
@@ -257,6 +241,7 @@ if (!isset($_SESSION['usuario'])) {
 <script src="vendors/popper.js/dist/umd/popper.min.js"></script>
 <script src="vendors/bootstrap/dist/js/bootstrap.min.js"></script>
 <script src="vendors/toastr/toastr.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script src="https://cdn3.devexpress.com/jslib/20.1.6/js/dx.all.js"></script>
 <script src="assets/js/main.js"></script>
 <script type="module" src="assets/js/entradas_salidas/entradas_salidas-core.js"></script>

@@ -165,7 +165,7 @@ function getColumnasPartes(){
                 let valor = parseFloat(options.value);
                 
                 // Verificamos que sea un número válido
-                let valorFormateado = isNaN(valor) ? '' : `$ ${valor.toString().replace(/\.?0+$/, "")}`;
+                let valorFormateado = isNaN(valor) ? '' : `$ ${valor.toString()}`;
             
                 const text = $("<div>").text(valorFormateado).css({
                     whiteSpace: "normal",
@@ -175,8 +175,7 @@ function getColumnasPartes(){
                 });
             
                 container.append(text);
-            }
-            
+            }    
         }, 
         {
             dataField: "cantidad",

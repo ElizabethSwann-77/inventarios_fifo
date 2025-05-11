@@ -25,8 +25,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $observaciones = $conexion->real_escape_string($input['observaciones']);
                 $id_responsable = $_SESSION['id_usuario']; // o ajusta según sesión
 
-                $sql = "INSERT INTO entradas (numero_parte, cantidad, observaciones, id_registro_entrada, fecha_ingreso, fecha_caducidad, fecha_ultima_modificacion)
-                        VALUES ('$numero_parte', '$cantidad', '$observaciones', '$id_responsable', NOW(), DATE_ADD(NOW(), INTERVAL 100 DAY), NOW())";
+                $sql = "INSERT INTO entradas (numero_parte, cantidad, observaciones, id_registro_entrada, fecha_ingreso, fecha_caducidad)
+                        VALUES ('$numero_parte', '$cantidad', '$observaciones', '$id_responsable', NOW(), DATE_ADD(NOW(), INTERVAL 100 DAY))";
 
                 if ($conexion->query($sql)) {
                     $id_insertado = $conexion->insert_id; // ✅ obtener inmediatamente después del INSERT
@@ -208,8 +208,7 @@ $sql = "SELECT
             p.descripcion, 
             e.observaciones,
             DATE_FORMAT(e.fecha_ingreso, '%d/%m/%Y %H:%i') AS fecha_ingreso, 
-            DATE_FORMAT(e.fecha_caducidad, '%d/%m/%Y %H:%i') AS fecha_caducidad, 
-            DATE_FORMAT(e.fecha_ultima_modificacion, '%d/%m/%Y %H:%i') AS fecha_ultima_modificacion
+            DATE_FORMAT(e.fecha_caducidad, '%d/%m/%Y %H:%i') AS fecha_caducidad        
         FROM entradas e
         INNER JOIN partes p ON p.numero_parte = e.numero_parte
         INNER JOIN usuarios u ON p.id_responsable = u.id_usuario
