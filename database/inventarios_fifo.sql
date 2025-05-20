@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 12-05-2025 a las 01:38:09
+-- Tiempo de generación: 20-05-2025 a las 22:42:42
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -30,9 +30,13 @@ SET time_zone = "+00:00";
 CREATE TABLE `entradas` (
   `id_entrada` int(11) NOT NULL,
   `numero_parte` varchar(9) NOT NULL,
-  `cantidad` int(11) NOT NULL,
+  `cantidad` double NOT NULL,
+  `precio` double NOT NULL,
+  `id_lote` varchar(5) NOT NULL,
+  `piso` int(11) NOT NULL,
   `observaciones` varchar(300) DEFAULT NULL,
   `id_registro_entrada` int(11) NOT NULL,
+  `id_proyecto_entrada` int(11) NOT NULL,
   `fecha_ingreso` datetime NOT NULL,
   `fecha_caducidad` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -45,10 +49,7 @@ CREATE TABLE `entradas` (
 
 CREATE TABLE `partes` (
   `numero_parte` varchar(9) NOT NULL,
-  `id_lote` varchar(3) NOT NULL,
   `tipo_parte` varchar(5) NOT NULL,
-  `precio` double NOT NULL,
-  `piso` int(11) NOT NULL,
   `cantidad` double NOT NULL DEFAULT 0,
   `id_responsable` int(11) NOT NULL,
   `id_proyecto` int(11) NOT NULL,
@@ -82,9 +83,13 @@ CREATE TABLE `proyectos` (
 CREATE TABLE `salidas` (
   `id_salida` int(11) NOT NULL,
   `numero_parte` varchar(9) NOT NULL,
-  `cantidad` int(11) NOT NULL,
+  `cantidad` double NOT NULL,
+  `precio` double NOT NULL,
+  `id_lote` int(5) NOT NULL,
+  `piso` int(11) NOT NULL,
   `observaciones` varchar(300) DEFAULT NULL,
   `id_registro_salida` int(11) NOT NULL,
+  `id_proyecto_salida` int(11) NOT NULL,
   `fecha_salida` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -124,13 +129,13 @@ ALTER TABLE `entradas`
 -- Indices de la tabla `partes`
 --
 ALTER TABLE `partes`
-  ADD PRIMARY KEY (`numero_parte`);
+  ADD PRIMARY KEY (`numero_parte`,`id_responsable`,`id_proyecto`) USING BTREE;
 
 --
 -- Indices de la tabla `proyectos`
 --
 ALTER TABLE `proyectos`
-  ADD PRIMARY KEY (`id_proyecto`);
+  ADD PRIMARY KEY (`id_proyecto`,`id_responsable`) USING BTREE;
 
 --
 -- Indices de la tabla `salidas`
@@ -155,12 +160,6 @@ ALTER TABLE `entradas`
   MODIFY `id_entrada` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT de la tabla `proyectos`
---
-ALTER TABLE `proyectos`
-  MODIFY `id_proyecto` int(11) NOT NULL AUTO_INCREMENT;
-
---
 -- AUTO_INCREMENT de la tabla `salidas`
 --
 ALTER TABLE `salidas`
@@ -170,7 +169,7 @@ ALTER TABLE `salidas`
 -- AUTO_INCREMENT de la tabla `usuarios`
 --
 ALTER TABLE `usuarios`
-  MODIFY `id_usuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id_usuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

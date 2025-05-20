@@ -66,6 +66,10 @@ if (!isset($_SESSION['usuario'])) {
             <div class="col-sm-8">
                 <div class="page-header float-right">
                     <div class="page-title">
+                         <button style="margin-top: 7px; border-radius: 5px;" type="button" class="btn btn-success" id="btnNewParts">
+                            <i class="fa fa-barcode icon-button" ></i>
+                             Nuevo Número de Parte 
+                        </button>
                     </div>
                 </div>
             </div>
@@ -102,7 +106,7 @@ if (!isset($_SESSION['usuario'])) {
                 <div class="modal-body" id="modalBodyParts">
                     <form action="" method="post" enctype="multipart/form-data" class="form-horizontal">
                         <div class="form-row">
-                            <div class="form-group col-md-6">
+                            <div class="form-group col-md-12">
                                 <label class="form-control-label">Número de Parte</label>
                                 <div class="input-group">
                                     <div class="input-group-addon"><i class="fa fa-barcode"></i></div>
@@ -112,41 +116,7 @@ if (!isset($_SESSION['usuario'])) {
                                     </div>
                                 </div>
                             </div>
-                            <div class="form-group col-md-6">
-                                <label class="form-control-label">Precio</label>
-                                <div class="input-group">
-                                    <div class="input-group-addon"><i class="fa fa-dollar-sign"></i></div>
-                                    <input type="number" class="form-control" placeholder="Ejemplo: $2300" id="precio" required>
-                                    <div class="invalid-feedback">
-                                        Por favor ingresa el precio.
-                                    </div>
-                                </div>
-                            </div>
                         </div>
-
-                        <div class="form-row">
-                            <div class="form-group col-md-6">
-                                <label class="form-control-label">Número de Lote</label>
-                                <div class="input-group">
-                                    <div class="input-group-addon"><i class="fa fa-layer-group"></i></div>
-                                    <input class="form-control" placeholder="Ejemplo: 1A" id="lote" required>
-                                    <div class="invalid-feedback">
-                                        Por favor ingresa el lote.
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="form-group col-md-6">
-                                <label class="form-control-label">Piso</label>
-                                <div class="input-group">
-                                    <div class="input-group-addon"><i class="fa fa-building"></i></div>
-                                    <input class="form-control" placeholder="Ejemplo: 1" id="piso" required>
-                                    <div class="invalid-feedback">
-                                        Por favor ingresa el piso.
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
                         <div class="form-row">
                             <div class="form-group col-md-6">
                                 <label class="form-control-label">Tipo de Parte</label>

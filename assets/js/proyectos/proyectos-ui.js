@@ -9,7 +9,8 @@ let size, sizecolumnview, sizesearchPanel, textGroupPanel;
 let visible= true;
 
 export let modoProyecto = 'insert';
-export let idProyectoEditando = null;
+
+
 
 if (isMobile){
     size = 35;
@@ -81,35 +82,6 @@ export function getProyectos(dataSource) {
             allowDragging: true
         },
         columns: getColumnasProyectos(),
-        onToolbarPreparing: function (e) {
-            let toolbarItems = e.toolbarOptions.items;
-
-            toolbarItems.unshift({
-                location: 'after',
-                widget: 'dxButton',
-                options: {
-                    stylingMode: "contained",
-                    text: "Nuevo Proyecto",
-                    icon: 'fas fa-folder-plus icon-button',
-                    hint: 'Registrar Nuevo Proyecto',
-                    type: 'default', // O 'success'
-                    width: size,
-                    elementAttr: {
-                        class: "btn-custom-resaltado icon-button-wrapper"
-                    },
-                    onClick: function(e) {
-                        CORE.limpiarInputs();
-                        modoProyecto = 'insert';
-                        idProyectoEditando = null;
-                        $("#ProyectsLabel").text("Nuevo Registro de Proyecto");
-                        $("#btnSaveProyect").text("Guardar");
-                        $('#Proyects').modal('show');
-                    }
-                    
-                }
-            });
-            
-        }
     }).dxDataGrid("instance");
 }
 
@@ -200,7 +172,7 @@ function getColumnasProyectos(){
             dataField: "estado",
             caption: "Estado",
             allowEditing: false,
-            width: 100,
+            width: 110,
             minWidth: 100,
             cellTemplate: function(container, options) {
                 $("<div>")
@@ -255,18 +227,19 @@ function getColumnasProyectos(){
                                 CORE.limpiarInputs();
                                 const data = options.data;
                                 modoProyecto = 'edit';
-                                idProyectoEditando = data.id_proyecto;
-            
-                                // Cargar los datos en el modal
+
+                                $("#numeroProyecto").prop('disabled', true).val(data.id_proyecto); // Alternativa a ocultar
+                                // Cargar los demás datos en el modal
                                 $("#nombreProyecto").val(data.nombre);
                                 $("#descripcionProyecto").val(data.descripcion);
-            
+
                                 // Ajustar encabezado y botón
                                 $("#ProyectsLabel").text("Editar Proyecto");
                                 $("#btnSaveProyect").text("Actualizar");
-            
+
                                 $('#Proyects').modal('show');
                             })
+
                     )
                     .appendTo(container);
             }
@@ -277,5 +250,13 @@ function getColumnasProyectos(){
     ];
 
     return dataFields;
+}
+
+export function setModoProyecto(valor) {
+    modoProyecto = valor;
+}
+
+export function getModoProyecto() {
+    return modoProyecto;
 }
 //--------------------------------------------------------------------------------------------------------------------//

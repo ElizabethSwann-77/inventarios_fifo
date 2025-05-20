@@ -66,6 +66,10 @@ if (!isset($_SESSION['usuario'])) {
             <div class="col-sm-8">
                 <div class="page-header float-right">
                     <div class="page-title">
+                         <button style="margin-top: 7px; border-radius: 5px;" type="button" class="btn btn-success" id="btnNewProyect">
+                            <i class="fa fa-folder-plus icon-button " ></i>
+                             Nuevo Proyecto 
+                        </button>
                     </div>
                 </div>
             </div>
@@ -101,6 +105,16 @@ if (!isset($_SESSION['usuario'])) {
                 </div>
                 <div class="modal-body" id="modalBodyProyect">
                     <form action="" method="post" enctype="multipart/form-data" class="form-horizontal">
+                        <div class="form-group">
+                            <label class="form-control-label">Número del Proyecto</label>
+                            <div class="input-group">
+                                <div class="input-group-addon"><i class="fa fa-hashtag"></i></div>
+                                <input type="number" step="1" min="1" id="numeroProyecto" class="form-control" placeholder="Ejemplo: 1" required>
+                                <div class="invalid-feedback">
+                                    Por favor ingresa el número del proyecto.
+                                </div>
+                            </div>
+                        </div>
                         <div class="form-group">
                             <label class="form-control-label">Nombre del Proyecto</label>
                             <div class="input-group">

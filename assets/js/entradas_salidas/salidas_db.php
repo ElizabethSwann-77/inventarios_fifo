@@ -21,12 +21,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     switch ($action) {
         case 'insert':
             $numero_parte = $conexion->real_escape_string($input['numero_parte']);
+            $id_proyecto = $conexion->real_escape_string($input['id_proyecto']);
             $cantidad = $conexion->real_escape_string($input['cantidad']);
+            $precio = $conexion->real_escape_string($input['precio']);
+            $lote = $conexion->real_escape_string($input['lote']);
+            $piso = $conexion->real_escape_string($input['piso']);
             $observaciones = $conexion->real_escape_string($input['observaciones']);
             $id_responsable = $_SESSION['id_usuario']; // o ajusta según sesión
 
-            $sql = "INSERT INTO salidas (numero_parte, cantidad, observaciones, id_registro_salida, fecha_salida)
-                    VALUES ('$numero_parte', '$cantidad', '$observaciones', '$id_responsable', NOW())";
+            $sql = "INSERT INTO salidas (numero_parte, cantidad, precio, id_lote, piso, observaciones, id_registro_salida, id_proyecto_salida, fecha_salida)
+                    VALUES ('$numero_parte', '$cantidad','$precio', '$lote', '$piso', '$observaciones', '$id_responsable', '$id_proyecto', NOW())";
 
             if ($conexion->query($sql)) {
                 $id_insertado = $conexion->insert_id; // ✅ obtener inmediatamente después del INSERT
@@ -34,12 +38,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $sql2 = "UPDATE partes 
                          SET cantidad = cantidad - '$cantidad',
                             fecha_ultima_modificacion = NOW()
-                         WHERE numero_parte = '$numero_parte'";
+                         WHERE numero_parte = '$numero_parte' AND id_proyecto = '$id_proyecto'";
                 
                 $conexion->query($sql2); // ✅ ejecutar después de capturar insert_id
-
-                $id_proyecto = obtenerIDProyecto($numero_parte);
-
+                
                 echo json_encode([
                     'success' => true,
                     'id_salida' => $id_insertado,
@@ -63,6 +65,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         case 'delete':
             $id = intval($input['id_salida']);
             $numero_parte = $conexion->real_escape_string($input['numero_parte']);
+            $id_proyecto = intval($input['id_proyecto']);
             $cantidad = $conexion->real_escape_string($input['cantidad']);
 
             $sql = "DELETE FROM salidas WHERE id_salida = $id";
@@ -70,7 +73,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $sql2 = "UPDATE partes 
                      SET cantidad = cantidad + $cantidad,
                         fecha_ultima_modificacion = NOW()
-                     WHERE numero_parte = '$numero_parte'";
+                     WHERE numero_parte = '$numero_parte' AND id_proyecto = $id_proyecto";
 
             if ($conexion->query($sql) && $conexion->query($sql2)) {
                     echo json_encode(["success" => true]);
@@ -116,19 +119,6 @@ function obtenerTipoParte($numero_parte) {
     return $tipo;
 }
 
-
-function obtenerIDProyecto($numero_parte) {
-    global $conexion;
-    $stmt = $conexion->prepare("SELECT id_proyecto FROM partes WHERE numero_parte = ?");
-    $stmt->bind_param("s", $numero_parte);
-    $stmt->execute();
-    $stmt->bind_result($id_proyecto);
-    $stmt->fetch();
-    $stmt->close();
-    return $id_proyecto;
-}
-
-
 function obtenerNombreProyecto($id_proyecto) {
     global $conexion;
     $stmt = $conexion->prepare("SELECT nombre FROM proyectos WHERE id_proyecto = ?");
@@ -145,18 +135,21 @@ function obtenerNombreProyecto($id_proyecto) {
 $sql = "SELECT 
             e.id_salida,
             e.numero_parte, 
-            e.cantidad,   
+            e.cantidad,  
+            e.precio,
+            e.id_lote,
+            e.piso, 
             p.tipo_parte,
             u.nombre AS responsable, 
-            p.id_proyecto,
+            e.id_proyecto_salida,
             pr.nombre AS proyecto, 
             p.descripcion, 
             e.observaciones,
             DATE_FORMAT(e.fecha_salida, '%d/%m/%Y %H:%i') AS fecha_salida
         FROM salidas e
-        INNER JOIN partes p ON p.numero_parte = e.numero_parte
-        INNER JOIN usuarios u ON p.id_responsable = u.id_usuario
-        INNER JOIN proyectos pr ON pr.id_proyecto = p.id_proyecto";
+        INNER JOIN usuarios u ON e.id_registro_salida = u.id_usuario
+        INNER JOIN partes p ON p.numero_parte = e.numero_parte AND p.id_responsable = e.id_registro_salida AND p.id_proyecto = e.id_proyecto_salida
+        INNER JOIN proyectos pr ON pr.id_proyecto = p.id_proyecto AND pr.id_responsable = e.id_registro_salida";
 
 // Agregar filtro si no es ADM
 if (!isset($_SESSION['puesto']) || $_SESSION['puesto'] === 'EMP') {

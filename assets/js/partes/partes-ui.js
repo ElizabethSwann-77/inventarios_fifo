@@ -80,36 +80,6 @@ export function getPiezas(dataSource) {
             allowDragging: true
         },
         columns: getColumnasPartes(),
-        onToolbarPreparing: function (e) {
-            let toolbarItems = e.toolbarOptions.items;
-
-            toolbarItems.unshift({
-                location: 'after',
-                widget: 'dxButton',
-                options: {
-                    stylingMode: "contained",
-                    text: "Nuevo Número de Parte",
-                    icon: 'fas fa-hashtag icon-button',
-                    hint: 'Registrar Nuevo Numero de Parte',
-                    type: 'default', // O 'success'
-                    width: size,
-                    elementAttr: {
-                        class: "btn-custom-resaltado icon-button-wrapper"
-                    },
-                    onClick: function(e) {
-                        modoParte = 'insert';
-                        idParteEditando = null;
-                        CORE.limpiarInputs();
-                        CORE.getProyectos();
-                        $("#PartsLabel").text("Nuevo Registro de Número de Parte");
-                        $("#btnSaveParts").text("Guardar");
-                        $('#Parts').modal('show');
-                    }
-                    
-                }
-            });
-            
-        }
     }).dxDataGrid("instance");
 }
 
@@ -123,60 +93,47 @@ function getColumnasPartes(){
             },
         },
         {
-            dataField: "id_lote",
-            allowEditing: false,
-            caption: "ID Lote",
-        },
-        {
-            dataField: "piso",
-            caption: "Piso",
-            cellTemplate: function(container, options) {
-                const text = $("<div>").text(options.value).css({
-                    whiteSpace: "normal",   // Asegura el salto de línea
-                    wordWrap: "break-word", // Evita el desbordamiento por palabras largas
-                    overflow: "hidden",
-                    textOverflow: "ellipsis"
-                });
-                container.append(text);
-            }
-        },
-        {
             dataField: "tipo_parte",
-            headerCellTemplate: function (container) {
+               headerCellTemplate: function (container) {
                 container.append($("<div style='white-space: normal;'>Tipo de<br>Parte</div>"));
             },
-          
+            allowEditing: false,
+            width: 110,
+            minWidth: 100,
             cellTemplate: function(container, options) {
-                const text = $("<div>").text(options.value).css({
-                    whiteSpace: "normal",   // Asegura el salto de línea
-                    wordWrap: "break-word", // Evita el desbordamiento por palabras largas
-                    overflow: "hidden",
-                    textOverflow: "ellipsis"
-                });
-                container.append(text);
+                $("<div>")
+                    .css({
+                        width: "100%",
+                        height: "35px",
+                        overflow: "hidden"
+                    })
+                    .appendTo(container)
+                    .dxSelectBox({
+                        dataSource: [
+                            { value: 'SMT', text: "SMT" },
+                            { value: 'THT', text: "THT" },
+                            { value: 'FG', text: "FG" },
+                        ],
+                        valueExpr: "value",
+                        displayExpr: "text",
+                        value: options.value, // No asignamos un valor por defecto distinto
+                        onValueChanged: function(e) {
+                            let numero_parte = options.data.numero_parte;
+                            let id_proyecto = options.data.id_proyecto;
+                        
+                            if (e.previousValue !== undefined && e.previousValue !== e.value) {
+                                CORE.postEditarTipo(numero_parte, id_proyecto, e.value);
+                        
+                                // Actualiza el valor en el dataSource
+                                options.data.tipo_parte = e.value;
+                        
+                                // Si tu grid necesita reflejar el cambio visualmente:
+                                options.component.refresh(); // Opcional, solo si no se ve reflejado automáticamente
+                            }
+                        }
+                    });
             }
         },
-        {
-            dataField: "precio",
-            headerCellTemplate: function (container) {
-                container.append($("<div style='white-space: normal;'>Precio de<br>la pieza</div>"));
-            },
-            cellTemplate: function (container, options) {
-                let valor = parseFloat(options.value);
-                
-                // Verificamos que sea un número válido
-                let valorFormateado = isNaN(valor) ? '' : `$ ${valor.toString()}`;
-            
-                const text = $("<div>").text(valorFormateado).css({
-                    whiteSpace: "normal",
-                    wordWrap: "break-word",
-                    overflow: "hidden",
-                    textOverflow: "ellipsis"
-                });
-            
-                container.append(text);
-            }    
-        }, 
         {
             dataField: "cantidad",
             headerCellTemplate: function (container) {
@@ -269,14 +226,11 @@ function getColumnasPartes(){
                                     const data = options.data;
                                     modoParte = 'edit';
                                     idParteEditando = data.numero_parte;
-                            
+                    
                                     // Cargar los datos en el modal
-                                    $("#parte").val(data.numero_parte);
-                                    $("#precio").val(data.precio);
-                                    $("#lote").val(data.id_lote);
-                                    $("#piso").val(data.piso);
+                                    $("#parte").prop('disabled', true).val(data.numero_parte); // Alternativa a ocultar
                                     $("#select_tipo").val(data.tipo_parte);
-                                    $("#select_proyecto").val(data.id_proyecto);
+                                    $("#select_proyecto").prop('disabled', true).val(data.id_proyecto);
                                     $("#descripcion").val(data.descripcion);
                             
                                     // Ajustar encabezado y botón
@@ -296,5 +250,13 @@ function getColumnasPartes(){
     ];
 
     return dataFields;
+}
+
+export function setModoParte(valor) {
+    modoParte = valor;
+}
+
+export function getModoParte() {
+    return modoParte;
 }
 //--------------------------------------------------------------------------------------------------------------------//

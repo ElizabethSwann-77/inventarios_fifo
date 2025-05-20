@@ -20,25 +20,44 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     switch ($action) {
         case 'insert':
-            $nombre = $conexion->real_escape_string($input['nombre']);
-            $descripcion = $conexion->real_escape_string($input['descripcion']);
-            $id_responsable = $_SESSION['id_usuario']; // Ajusta según tu sesión
+                $numero = $conexion->real_escape_string($input['numero']);
+                $nombre = $conexion->real_escape_string($input['nombre']);
+                $descripcion = $conexion->real_escape_string($input['descripcion']);
+                $id_responsable = $_SESSION['id_usuario']; // Ajusta según tu sesión
 
-            $sql = "INSERT INTO proyectos (nombre, descripcion, id_responsable, fecha_registro, fecha_ultima_modificacion)
-                    VALUES ('$nombre', '$descripcion', '$id_responsable', NOW(), NOW())";
+                // Validación: verificar si ya existe un proyecto con el mismo número y responsable
+                $checkSql = "SELECT COUNT(*) AS existe FROM proyectos WHERE id_proyecto = '$numero' AND id_responsable = '$id_responsable'";
+                $checkResult = $conexion->query($checkSql);
 
-            if ($conexion->query($sql)) {
-                echo json_encode([
-                    'success' => true,
-                    'id_proyecto' => $conexion->insert_id,
-                    'responsable' => $_SESSION['nombre'] // Ajusta si el nombre del usuario está en otra parte
-                ]);
-                exit();
-            } else {
-                http_response_code(500);
-                echo json_encode(['error' => 'Error al ejecutar la consulta']);
-            }
+                if ($checkResult) {
+                    $row = $checkResult->fetch_assoc();
+                    if ($row['existe'] > 0) {
+                        echo json_encode([
+                            'success' => false,
+                            'error' => 'Ya existe el proyecto número: ' . $numero . ' para este usuario.'
+                        ]);
+                        exit();
+                    }
+                } else {
+                    http_response_code(500);
+                    echo json_encode(['error' => 'Error al verificar existencia previa']);
+                    exit();
+                }
 
+                // Si no existe, se hace el insert
+                $sql = "INSERT INTO proyectos (id_proyecto, nombre, descripcion, id_responsable, fecha_registro, fecha_ultima_modificacion)
+                        VALUES ('$numero', '$nombre', '$descripcion', '$id_responsable', NOW(), NOW())";
+
+                if ($conexion->query($sql)) {
+                    echo json_encode([
+                        'success' => true,
+                        'responsable' => $_SESSION['nombre']
+                    ]);
+                    exit();
+                } else {
+                    http_response_code(500);
+                    echo json_encode(['error' => 'Error al ejecutar la consulta']);
+                }
             break;
 
             case 'update':

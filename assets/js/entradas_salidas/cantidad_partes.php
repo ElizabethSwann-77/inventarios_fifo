@@ -9,11 +9,15 @@ if (!isset($_SESSION['usuario'])) {
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inventarios_fifo/config/conexion.php';
 
 $sql = "SELECT 
-            p.id_proyecto, 
-            p.nombre 
-        FROM proyectos p 
+            p.numero_parte,
+            p.cantidad,
+            p.id_proyecto,
+            pr.nombre AS proyecto
+        FROM partes p 
+        INNER JOIN proyectos pr ON p.id_proyecto = pr.id_proyecto
         INNER JOIN usuarios u ON p.id_responsable = u.id_usuario
-        WHERE p.estado = 'A'";
+        WHERE p.cantidad != 0";
+
 
 // Agregar filtro si no es ADM
 if (!isset($_SESSION['puesto']) || $_SESSION['puesto'] === 'EMP') {
@@ -21,17 +25,16 @@ if (!isset($_SESSION['puesto']) || $_SESSION['puesto'] === 'EMP') {
     $sql .= " AND p.id_responsable = $id_usuario";
 }
 
-
 $resultado = $conexion->query($sql);
-$proyectos = [];
+$partes = [];
 
 if ($resultado && $resultado->num_rows > 0) {
     while ($fila = $resultado->fetch_assoc()) {
-        $proyectos[] = $fila;
+        $partes[] = $fila;
     }
 }
 
 $conexion->close();
 
 header('Content-Type: application/json');
-echo json_encode($proyectos);
+echo json_encode($partes);

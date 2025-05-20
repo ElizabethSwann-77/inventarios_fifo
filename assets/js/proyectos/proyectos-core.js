@@ -31,6 +31,17 @@ $(document).ready(function() {
 
     initialize();
 
+    $('#numeroProyecto').on('input', function () {
+        let valor = $(this).val().trim();
+
+        // Validar que sea un número entero positivo mayor a 0 y sin decimales
+        if (!/^[1-9]\d*$/.test(valor)) {
+            $(this).val(''); // Borra el valor inválido
+            toastr.error("Solo se permiten números enteros positivos mayores que cero");
+        }
+    });
+
+
     $('#nombreProyecto').on('input', function () {
         const valor = $(this).val().trim();
         if (valor.length >= 101) {
@@ -48,7 +59,15 @@ $(document).ready(function() {
         }
     });
 
+    $("#btnNewProyect").click(async function () {
+        limpiarInputs();
+        $("#ProyectsLabel").text("Nuevo Registro de Proyecto");
+        $("#btnSaveProyect").text("Guardar");
+        $('#Proyects').modal('show');
+    });
+
     $("#btnSaveProyect").click(async function () {
+        const numero = ($("#numeroProyecto").val() || "").trim();
         const nombre = ($("#nombreProyecto").val() || "").trim();
         const descripcion = ($("#descripcionProyecto").val() || "").trim();
 
@@ -58,10 +77,16 @@ $(document).ready(function() {
         $(".form-control").removeClass("is-invalid");
     
         // Verifica los campos obligatorios
-        if (!nombre) {
-            $("#nombreProyecto").addClass("is-invalid");  // Agrega la clase is-invalid
-            toastr.warning('El nombre del proyecto es obligatorio.');
-            allFieldsValid = false;  // Cambia el estado de validación
+        if (!nombre || !numero) {
+            if (!nombre) {
+                $("#nombreProyecto").addClass("is-invalid");
+            }
+            if (!numero) {
+                $("#numeroProyecto").addClass("is-invalid");
+            }
+           
+            toastr.warning('Todos los campos obligatorios deben estar llenos.');
+            allFieldsValid = false;
         }
     
         // Si hay campos vacíos, no procesamos los datos
@@ -70,14 +95,14 @@ $(document).ready(function() {
         
     
         if (UI.modoProyecto === 'insert') {
-            const resultado = await postNuevoProyecto(nombre, descripcion);
-    
+            const resultado = await postNuevoProyecto(numero, nombre, descripcion);
+
             if (resultado.success) {
                 const grid = $("#gridProyectos").dxDataGrid("instance");
                 const dataSource = grid.option("dataSource");
-    
+
                 const nuevoProyecto = {
-                    id_proyecto: resultado.id_proyecto ?? 0,
+                    id_proyecto: numero ?? 0,
                     nombre: nombre,
                     descripcion: descripcion,
                     responsable: resultado.responsable ?? 'Tú',
@@ -85,25 +110,25 @@ $(document).ready(function() {
                     fecha_registro: formatearFecha(new Date()),
                     fecha_ultima_modificacion: formatearFecha(new Date())
                 };
-    
+
                 dataSource.push(nuevoProyecto);
                 grid.refresh();
-    
+
                 limpiarInputs();
                 $('#Proyects').modal('hide');
                 toastr.success('Proyecto registrado exitosamente.');
             } else {
-                toastr.error('No se pudo registrar el proyecto.');
+                toastr.error(resultado.error || 'No se pudo registrar el proyecto.');
             }
         } else if (UI.modoProyecto === 'edit') {
-            const resultado = await postEditarProyecto(UI.idProyectoEditando, nombre, descripcion);
+            const resultado = await postEditarProyecto(numero, nombre, descripcion);
     
             if (resultado.success) {
                 const grid = $("#gridProyectos").dxDataGrid("instance");
                 const dataSource = grid.option("dataSource");
     
                 // Actualiza el proyecto en la grilla
-                const index = dataSource.findIndex(p => p.id_proyecto === UI.idProyectoEditando);
+                const index = dataSource.findIndex(p => p.id_proyecto === numero);
                 if (index !== -1) {
                     dataSource[index].nombre = nombre;
                     dataSource[index].descripcion = descripcion;
@@ -145,7 +170,7 @@ function getProyectos() {
 }
 
     
-async function postNuevoProyecto(nombre, descripcion) {
+async function postNuevoProyecto(numero, nombre, descripcion) {
     const response = await fetch('assets/js/proyectos/proyectos_db.php', {
         method: 'POST',
         headers: {
@@ -153,6 +178,7 @@ async function postNuevoProyecto(nombre, descripcion) {
         },
         body: JSON.stringify({
             action: 'insert',
+            numero,
             nombre,
             descripcion
         })
@@ -234,6 +260,8 @@ function formatearFecha(fecha) {
 }
 
 export function limpiarInputs() {
+    UI.setModoProyecto('insert');
+    $("#numeroProyecto").prop('disabled', false).val('');
     $('#nombreProyecto').val('');
     $('#descripcionProyecto').val('');
 }

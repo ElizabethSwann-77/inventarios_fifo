@@ -59,13 +59,17 @@ if (!isset($_SESSION['usuario'])) {
             <div class="col-sm-4">
                 <div class="page-header float-left">
                     <div class="page-title">
-                        <h1>Entradas y Salidas</h1>
+                        <h1>Entradas</h1>
                     </div>
                 </div>
             </div>
             <div class="col-sm-8">
                 <div class="page-header float-right">
                     <div class="page-title">
+                         <button style="margin-top: 7px; border-radius: 5px;" type="button" class="btn btn-success" id="btnNewEntrada">
+                            <i class="fa fa-folder-plus icon-button " ></i>
+                             Nueva Entrada 
+                        </button>
                     </div>
                 </div>
             </div>
@@ -84,6 +88,26 @@ if (!isset($_SESSION['usuario'])) {
                         <div class="card-footer">
                             <!-- Opcional -->
                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="breadcrumbs">
+            <div class="col-sm-4">
+                <div class="page-header float-left">
+                    <div class="page-title">
+                        <h1>Salidas</h1>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-8">
+                <div class="page-header float-right">
+                    <div class="page-title">
+                         <button style="margin-top: 7px; border-radius: 5px;" type="button" class="btn btn-success" id="btnNewSalida">
+                            <i class="fa fa-folder-plus icon-button " ></i>
+                             Nueva Salida 
+                        </button>
                     </div>
                 </div>
             </div>
@@ -142,6 +166,38 @@ if (!isset($_SESSION['usuario'])) {
                                 </div>
                             </div>
                         </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-4">
+                                <label class="form-control-label">Precio</label>
+                                <div class="input-group">
+                                    <div class="input-group-addon"><i class="fa fa-dollar-sign"></i></div>
+                                    <input type="number" class="form-control" placeholder="Ejemplo: $2300" id="precio_entrada" required>
+                                    <div class="invalid-feedback">
+                                        Por favor ingresa el precio.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label class="form-control-label">Número de Lote</label>
+                                <div class="input-group">
+                                    <div class="input-group-addon"><i class="fa fa-layer-group"></i></div>
+                                    <input class="form-control" placeholder="Ejemplo: 1A" id="lote_entrada" required>
+                                    <div class="invalid-feedback">
+                                        Por favor ingresa el lote.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label class="form-control-label">Piso</label>
+                                <div class="input-group">
+                                    <div class="input-group-addon"><i class="fa fa-building"></i></div>
+                                    <input class="form-control" placeholder="Ejemplo: 1" id="piso_entrada" required>
+                                    <div class="invalid-feedback">
+                                        Por favor ingresa el piso.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         <div class="form-group">
                             <label class="form-control-label">Observaciones de la Entrada</label>
                             <div class="input-group">
@@ -186,9 +242,44 @@ if (!isset($_SESSION['usuario'])) {
                                 <label class="form-control-label">Cantidad de Piezas</label>
                                 <div class="input-group">
                                     <div class="input-group-addon"><i class="fa fa-hashtag"></i></div>
-                                    <input type="number" class="form-control" placeholder="Ejemplo: 100" id="cantidad_salida" required disabled>
+                                    <input type="number" class="form-control" placeholder="Ejemplo: 100" id="cantidad_salida" disabled required>
+                                </div>
+                                <!-- Mensaje dinámico -->
+                                <small id="cantidad_maxima_msg" class="form-text text-muted" style="display: none;"></small>
+
+                                <div class="invalid-feedback">
+                                    Por favor ingresa la cantidad de piezas.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-4">
+                                <label class="form-control-label">Precio</label>
+                                <div class="input-group">
+                                    <div class="input-group-addon"><i class="fa fa-dollar-sign"></i></div>
+                                    <input type="number" class="form-control" placeholder="Ejemplo: $2300" id="precio_salida" required>
                                     <div class="invalid-feedback">
-                                        Por favor ingresa la cantidad de piezas.
+                                        Por favor ingresa el precio.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label class="form-control-label">Número de Lote</label>
+                                <div class="input-group">
+                                    <div class="input-group-addon"><i class="fa fa-layer-group"></i></div>
+                                    <input class="form-control" placeholder="Ejemplo: 1A" id="lote_salida" required>
+                                    <div class="invalid-feedback">
+                                        Por favor ingresa el lote.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label class="form-control-label">Piso</label>
+                                <div class="input-group">
+                                    <div class="input-group-addon"><i class="fa fa-building"></i></div>
+                                    <input class="form-control" placeholder="Ejemplo: 1" id="piso_salida" required>
+                                    <div class="invalid-feedback">
+                                        Por favor ingresa el piso.
                                     </div>
                                 </div>
                             </div>
@@ -222,6 +313,7 @@ if (!isset($_SESSION['usuario'])) {
                <div class="modal-body" id="modalBodyDelete">
                     <div class="mensaje-confirmacion"></div>
                     <input type="hidden" id="numero_parte_delete">
+                    <input type="hidden" id="id_proyecto_delete">
                     <input type="hidden" id="cantidad_delete">
                 </div>
                 <div class="modal-footer">

@@ -39,30 +39,6 @@ $(document).ready(function() {
         }
     });
 
-    $('#lote').on('input', function () {
-        const valor = $(this).val().trim();
-        if (valor.length >= 4) {
-            $(this).val(valor.substring(0, 3));  // Limitar a  3 caracteres
-            toastr.warning("El lote no puede ser mayor a 3 caracteres");
-        }
-    });
-
-    $('#precio').on('input', function () {
-        const valor = $(this).val();
-    
-        // Verifica si hay un punto decimal
-        if (valor.includes('.')) {
-            const [entero, decimal] = valor.split('.');
-    
-            // Si hay más de 3 decimales, los recorta
-            if (decimal.length > 3) {
-                $(this).val(`${entero}.${decimal.substring(0, 3)}`);
-                toastr.warning("Solo se permiten hasta 3 decimales en el precio.");
-            }
-        }
-    });
-    
-
     $('#descripcion').on('input', function () {
         const valor = $(this).val().trim();
         if (valor.length >= 301) {
@@ -71,11 +47,16 @@ $(document).ready(function() {
         }
     });
 
+     $("#btnNewParts").click(async function () {
+            limpiarInputs();
+            getProyectos();
+            $("#PartsLabel").text("Nuevo Registro de Número de Parte");
+            $("#btnSaveParts").text("Guardar");
+            $('#Parts').modal('show');
+        });
+
     $("#btnSaveParts").click(async function () {
         const numero_parte = ($("#parte").val() || "").trim();
-        const precio = ($("#precio").val() || "").trim();
-        const id_lote = ($("#lote").val() || "").trim();
-        const piso = ($("#piso").val() || "").trim();
         const tipo_parte = ($("#select_tipo").val() || "").trim();
         const id_proyecto = ($("#select_proyecto").val() || "").trim();
         const descripcion = ($("#descripcion").val() || "").trim();
@@ -86,18 +67,9 @@ $(document).ready(function() {
         $(".form-control").removeClass("is-invalid");
     
         // Verifica los campos obligatorios
-        if (!numero_parte || !precio || !id_lote || !piso || !id_proyecto) {
+        if (!numero_parte || !id_proyecto) {
             if (!numero_parte) {
                 $("#parte").addClass("is-invalid");
-            }
-            if (!precio) {
-                $("#precio").addClass("is-invalid");
-            }
-            if (!id_lote) {
-                $("#lote").addClass("is-invalid");
-            }
-            if (!piso) {
-                $("#piso").addClass("is-invalid");
             }
             if (!id_proyecto) {
                 $("#select_proyecto").addClass("is-invalid");
@@ -111,9 +83,6 @@ $(document).ready(function() {
     
         const datos = {
             numero_parte,
-            precio,
-            id_lote,
-            piso,
             tipo_parte,
             id_proyecto,
             descripcion
@@ -121,17 +90,14 @@ $(document).ready(function() {
     
         if (UI.modoParte === 'insert') {
             const resultado = await postNuevaParte(datos);
-    
+
             if (resultado.success) {
                 const grid = $("#gridPiezas").dxDataGrid("instance");
                 const dataSource = grid.option("dataSource");
-    
+
                 const nuevaParte = {
                     numero_parte: resultado.numero_parte ?? 0,
-                    id_lote: resultado.lote ?? 0,
-                    piso: resultado.piso ?? 0,
                     tipo_parte: resultado.tipo ?? 'SMT',
-                    precio: resultado.precio ?? 0,
                     responsable: resultado.responsable,
                     id_proyecto: id_proyecto,
                     proyecto: resultado.proyecto,
@@ -140,34 +106,36 @@ $(document).ready(function() {
                     fecha_ingreso: formatearFecha(new Date()),
                     fecha_ultima_modificacion: formatearFecha(new Date())
                 };
-    
+
                 dataSource.push(nuevaParte);
                 grid.refresh();
-    
+
                 limpiarInputs();
                 $('#Parts').modal('hide');
                 toastr.success('Número de parte registrado exitosamente.');
             } else {
-                toastr.error('No se pudo registrar el proyecto.');
+                if (resultado.error?.includes('Ya existe un número de parte')) {
+                    toastr.error('Este número de parte ya existe para este proyecto y responsable.');
+                } else {
+                    toastr.error('No se pudo registrar el número de parte. Intenta nuevamente.');
+                    console.error('Error en el insert:', resultado.error || 'Error desconocido');
+                }
             }
         } else if (UI.modoParte === 'edit') {
             const datos = {
-                numero_parte: UI.idParteEditando,  // Usamos numero_parte como identificador
-                precio,
-                id_lote,
-                piso,
+                numero_parte: UI.idParteEditando,
                 tipo_parte,
-                id_proyecto,
+                id_proyecto,  // nuevo proyecto seleccionado
                 descripcion
             };
-        
+
             const resultado = await postEditarParte(datos);
-        
+
             if (resultado.success) {
                 const grid = $("#gridPiezas").dxDataGrid("instance");
                 const dataSource = grid.option("dataSource");
-        
-                const index = dataSource.findIndex(p => p.numero_parte === UI.idParteEditando);  // Comparamos por numero_parte
+
+                const index = dataSource.findIndex(p => p.numero_parte === numero_parte);
                 if (index !== -1) {
                     dataSource[index] = {
                         ...dataSource[index],
@@ -175,15 +143,21 @@ $(document).ready(function() {
                         fecha_ultima_modificacion: formatearFecha(new Date())
                     };
                 }
-        
+
                 grid.refresh();
                 limpiarInputs();
                 $('#Parts').modal('hide');
                 toastr.success('Número de parte actualizado correctamente.');
             } else {
-                toastr.error('No se pudo actualizar la parte.');
+                if (resultado.error?.toLowerCase().includes('ya existe un número de parte')) {
+                    toastr.error('Este número de parte ya existe para este proyecto y responsable.');
+                } else {
+                    toastr.error('No se pudo actualizar la parte. Intenta nuevamente.');
+                    console.error('Error al actualizar:', resultado.error || 'Error desconocido');
+                }
             }
-        }        
+        }
+      
     });
     
     
@@ -224,7 +198,7 @@ export function getProyectos(callback) {
                 select.append(
                     $('<option>', {
                         value: proyecto.id_proyecto,
-                        text: proyecto.nombre
+                        text: proyecto.id_proyecto+ ' - '+ proyecto.nombre
                     })
                 );
             });
@@ -239,23 +213,86 @@ export function getProyectos(callback) {
     });
 }
 
-
 async function postNuevaParte(datos) {
-    const response = await fetch('assets/js/partes/partes_db.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'insert', ...datos })
-    });
-    return await response.json();
+    try {
+        const response = await fetch('assets/js/partes/partes_db.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'insert', ...datos })
+        });
+
+        // Si el servidor responde pero con error (ej. 500)
+        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(result?.mysql_error || 'Error desconocido en el servidor');
+        }
+
+        return result;
+    } catch (error) {
+        console.error('Error en postNuevaParte:', error);
+        return {
+            success: false,
+            error: error.message || 'Fallo inesperado'
+        };
+    }
 }
 
 async function postEditarParte(datos) {
+    try {
+        const response = await fetch('assets/js/partes/partes_db.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'update', ...datos })
+        });
+
+        // Si el servidor responde pero con error (ej. 500)
+        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(result?.mysql_error || 'Error desconocido en el servidor');
+        }
+
+        return result;
+    } catch (error) {
+        console.error('Error en postNuevaParte:', error);
+        return {
+            success: false,
+            error: error.message || 'Fallo inesperado'
+        };
+    }
+}
+
+export async function postEditarTipo(numero_parte, id_proyecto, tipo) {
     const response = await fetch('assets/js/partes/partes_db.php', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'update', ...datos })
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            action: 'updateStatus',
+            numero_parte,
+            id_proyecto,
+            tipo
+        })
     });
-    return await response.json();
+
+    const text = await response.text();
+
+    try {
+        const result = JSON.parse(text); // <- primero parseas
+        if (result.success) {
+            toastr.success("Tipo de parte actualizado correctamente");
+        } else {
+            toastr.error(result.error || "Error al actualizar tipo de parte");
+        }
+        return result; // <- luego retornas
+    } catch (e) {
+        console.error("Error al parsear JSON:", e);
+        console.warn("Respuesta recibida del servidor:", text);
+        toastr.error("Error en la respuesta del servidor");
+        return { success: false, error: 'Respuesta inválida del servidor' };
+    }
 }
 
 function formatearFecha(fecha) {
@@ -269,10 +306,9 @@ function formatearFecha(fecha) {
 }
 
 export function limpiarInputs() {
-    $('#parte').val('');
-    $('#precio').val('');
-    $('#lote').val('');
-    $('#piso').val('');
+    UI.setModoParte('insert');
+    $("#parte").prop('disabled', false).val('');
+    $("#select_proyecto").prop('disabled', false);
     $('#descripcion').val('');
 }
 

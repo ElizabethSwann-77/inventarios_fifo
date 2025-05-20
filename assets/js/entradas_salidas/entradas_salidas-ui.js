@@ -83,36 +83,6 @@ export function getEntradas(dataSource) {
             allowDragging: true
         },
         columns: getColumnasEntradas(),
-        onToolbarPreparing: function (e) {
-            let toolbarItems = e.toolbarOptions.items;
-
-            toolbarItems.unshift({
-                location: 'after',
-                widget: 'dxButton',
-                options: {
-                    stylingMode: "contained",
-                    text: "Nueva Entrada",
-                    icon: 'fas fa-plus icon-button',
-                    hint: 'Registrar Nueva Entrada',
-                    type: 'default', // O 'success'
-                    width: size,
-                    elementAttr: {
-                        class: "btn-custom-resaltado icon-button-wrapper"
-                    },
-                    onClick: function(e) {
-                        modoEntrada = 'insert';
-                        idEntradaEditando = null;
-                        CORE.limpiarInputs();
-                        CORE.getNumerosParte();
-                        $("#EntradasLabel").text("Nuevo Registro de Entrada");
-                        $("#btnSaveEntrada").text("Guardar");
-                        $('#Entradas').modal('show');
-                    }
-                    
-                }
-            });
-            
-        }
     }).dxDataGrid("instance");
 }
 
@@ -153,7 +123,46 @@ function getColumnasEntradas(){
             headerCellTemplate: function (container) {
                 container.append($("<div style='white-space: normal;'>Cantidad de<br>la entrada</div>"));
             },
-        },       
+        },
+        {
+            dataField: "precio",
+            headerCellTemplate: function (container) {
+                container.append($("<div style='white-space: normal;'>Precio de<br>la pieza</div>"));
+            },
+            cellTemplate: function (container, options) {
+                let valor = parseFloat(options.value);
+                
+                // Verificamos que sea un número válido
+                let valorFormateado = isNaN(valor) ? '' : `$ ${valor.toString()}`;
+            
+                const text = $("<div>").text(valorFormateado).css({
+                    whiteSpace: "normal",
+                    wordWrap: "break-word",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis"
+                });
+            
+                container.append(text);
+            }    
+        },    
+        {
+            dataField: "id_lote",
+            allowEditing: false,
+            caption: "ID Lote",
+        },
+        {
+            dataField: "piso",
+            caption: "Piso",
+            cellTemplate: function(container, options) {
+                const text = $("<div>").text(options.value).css({
+                    whiteSpace: "normal",   // Asegura el salto de línea
+                    wordWrap: "break-word", // Evita el desbordamiento por palabras largas
+                    overflow: "hidden",
+                    textOverflow: "ellipsis"
+                });
+                container.append(text);
+            }
+        },    
         {
             dataField: "observaciones",
             headerCellTemplate: function (container) {
@@ -183,7 +192,7 @@ function getColumnasEntradas(){
             }
         },
         {
-            dataField: "id_proyecto",
+            dataField: "id_proyecto_entrada",
             caption: "Proyecto",
             visible: false
         },
@@ -251,6 +260,7 @@ function getColumnasEntradas(){
                                 $("#btnDelete").text("Eliminar");
 
                                 $("#numero_parte_delete").val(data.numero_parte);
+                                $("#id_proyecto_delete").val(data.id_proyecto_entrada);
                                 $("#cantidad_delete").val(data.cantidad);
 
                                 $('#Delete').modal('show');
@@ -265,6 +275,15 @@ function getColumnasEntradas(){
 
     return dataFields;
 }
+
+export function setModoEntrada(valor) {
+    modoEntrada = valor;
+}
+
+export function getModoEntrada() {
+    return modoEntrada;
+}
+
 //--------------------------------------------------------------------------------------------------------------------//
 
 //--GRID PARA VISUALIZAR LAS SALIDAS DEL SISTEMA----------------------------------------------------------------------//
@@ -323,36 +342,6 @@ export function getSalidas(dataSource) {
             allowDragging: true
         },
         columns: getColumnasSalidas(),
-        onToolbarPreparing: function (e) {
-            let toolbarItems = e.toolbarOptions.items;
-
-            toolbarItems.unshift({
-                location: 'after',
-                widget: 'dxButton',
-                options: {
-                    stylingMode: "contained",
-                    text: "Nueva Salida",
-                    icon: 'fas fa-hashtag icon-button',
-                    hint: 'Registrar Nueva Salida',
-                    type: 'default', // O 'success'
-                    width: size,
-                    elementAttr: {
-                        class: "btn-custom-resaltado icon-button-wrapper"
-                    },
-                    onClick: function(e) {
-                        modoSalida = 'insert';
-                        idSalidaEditando = null;
-                        CORE.limpiarInputs();
-                        CORE.getNumerosParteSalidas();
-                        $("#SalidasLabel").text("Nuevo Registro de Salida");
-                        $("#btnSaveSalidas").text("Guardar");
-                        $('#Salidas').modal('show');
-                    }
-                    
-                }
-            });
-            
-        }
     }).dxDataGrid("instance");
 }
 
@@ -387,14 +376,52 @@ function getColumnasSalidas(){
                 });
                 container.append(text);
             }
-        },
+        },        
         {
             dataField: "cantidad",
             headerCellTemplate: function (container) {
                 container.append($("<div style='white-space: normal;'>Cantidad de<br>la salida</div>"));
             },
-        
         },   
+        {
+            dataField: "precio",
+            headerCellTemplate: function (container) {
+                container.append($("<div style='white-space: normal;'>Precio de<br>la pieza</div>"));
+            },
+            cellTemplate: function (container, options) {
+                let valor = parseFloat(options.value);
+                
+                // Verificamos que sea un número válido
+                let valorFormateado = isNaN(valor) ? '' : `$ ${valor.toString()}`;
+            
+                const text = $("<div>").text(valorFormateado).css({
+                    whiteSpace: "normal",
+                    wordWrap: "break-word",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis"
+                });
+            
+                container.append(text);
+            }    
+        }, 
+        {
+            dataField: "id_lote",
+            allowEditing: false,
+            caption: "ID Lote",
+        },
+        {
+            dataField: "piso",
+            caption: "Piso",
+            cellTemplate: function(container, options) {
+                const text = $("<div>").text(options.value).css({
+                    whiteSpace: "normal",   // Asegura el salto de línea
+                    wordWrap: "break-word", // Evita el desbordamiento por palabras largas
+                    overflow: "hidden",
+                    textOverflow: "ellipsis"
+                });
+                container.append(text);
+            }
+        },
         {
             dataField: "observaciones",
             headerCellTemplate: function (container) {
@@ -424,7 +451,7 @@ function getColumnasSalidas(){
             }
         },
         {
-            dataField: "id_proyecto",
+            dataField: "id_proyecto_salida",
             caption: "Proyecto",
             visible: false
         },
@@ -476,11 +503,12 @@ function getColumnasSalidas(){
                                 $("#DeleteLabel").text("Eliminar Salida Número: " + data.id_salida);
                                 $("#modalBodyDelete .mensaje-confirmacion").html(`
                                     <label>¿Estás seguro que deseas eliminar la salida número <strong>${data.id_salida}</strong>?</label>
-                                    <label>Al hacerlo, se eliminarán <strong>${data.cantidad}</strong> unidades del total de piezas registradas.</label>
+                                    <label>Al hacerlo, se sumaran <strong>${data.cantidad}</strong> unidades del total de piezas registradas.</label>
                                 `);
 
                                 $("#btnDelete").text("Eliminar");
                                 $("#numero_parte_delete").val(data.numero_parte);
+                                $("#id_proyecto_delete").val(data.id_proyecto_salida);
                                 $("#cantidad_delete").val(data.cantidad);
 
                                 $('#Delete').modal('show');
@@ -497,4 +525,13 @@ function getColumnasSalidas(){
 
     return dataFields;
 }
+
+export function setModoSalida(valor) {
+    modoSalida = valor;
+}
+
+export function getModoSalida() {
+    return modoSalida;
+}
+
 //--------------------------------------------------------------------------------------------------------------------//
