@@ -178,7 +178,7 @@ if (!isset($_SESSION['usuario'])) {
                                 </div>
                             </div>
                             <div class="form-group col-md-4">
-                                <label class="form-control-label">Número de Lote</label>
+                                <label class="form-control-label">Locación</label>
                                 <div class="input-group">
                                     <div class="input-group-addon"><i class="fa fa-layer-group"></i></div>
                                     <input class="form-control" placeholder="Ejemplo: 1A" id="lote_entrada" required>
@@ -264,7 +264,7 @@ if (!isset($_SESSION['usuario'])) {
                                 </div>
                             </div>
                             <div class="form-group col-md-4">
-                                <label class="form-control-label">Número de Lote</label>
+                                <label class="form-control-label">Locación</label>
                                 <div class="input-group">
                                     <div class="input-group-addon"><i class="fa fa-layer-group"></i></div>
                                     <input class="form-control" placeholder="Ejemplo: 1A" id="lote_salida" required>

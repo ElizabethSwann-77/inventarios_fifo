@@ -119,7 +119,7 @@ if (!isset($_SESSION['usuario'])) {
                         </div>
                         <div class="form-row">
                             <div class="form-group col-md-6">
-                                <label class="form-control-label">Tipo de Parte</label>
+                                <label class="form-control-label">Ultimo proceso</label>
                                 <div class="input-group">
                                     <div class="input-group-addon"><i class="fa fa-microchip"></i></div>
                                     <select class="form-control" id="select_tipo">
